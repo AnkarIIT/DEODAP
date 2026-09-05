@@ -1,0 +1,6 @@
+{
+  "name": "Shoply. - Good stuff. Better prices.",
+  "description": "Everyday products, smart finds, and little things worth buying. A modern Indian ecommerce dropshipping marketplace with intelligent supplier routing, UPI checkout, and admin fulfillment.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

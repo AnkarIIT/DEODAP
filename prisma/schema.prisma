@@ -1,0 +1,467 @@
+// Prisma Schema for BharatCart Dropshipping Platform
+// Configured for PostgreSQL in production, with full model normalization
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  CUSTOMER
+  ADMIN
+  OPERATOR
+}
+
+enum OrderStatus {
+  PENDING_PAYMENT
+  PAYMENT_REVIEW
+  PAID
+  CONFIRMED
+  SUPPLIER_SELECTION
+  SUPPLIER_ORDER_PENDING
+  SUPPLIER_ORDERED
+  PROCESSING
+  SHIPPED
+  OUT_FOR_DELIVERY
+  DELIVERED
+  CANCELLED
+  RETURN_REQUESTED
+  RETURN_APPROVED
+  RETURNED
+  REFUNDED
+  FAILED
+}
+
+enum PaymentStatus {
+  PENDING
+  UNDER_REVIEW
+  COMPLETED
+  FAILED
+  REFUNDED
+}
+
+enum PaymentMethod {
+  UPI_MANUAL
+  MOCK_GATEWAY
+  COD
+  NETBANKING
+}
+
+enum IntegrationType {
+  MOCK_DEODAP
+  MANUAL_PORTAL
+  OFFICIAL_API
+  CSV_FEED
+}
+
+enum SupplierStatus {
+  ACTIVE
+  INACTIVE
+  RESTRICTED
+}
+
+enum SupplierOrderStatus {
+  PENDING
+  PLACED
+  CONFIRMED
+  SHIPPED
+  DELIVERED
+  CANCELLED
+  REJECTED
+}
+
+enum ReturnStatus {
+  REQUESTED
+  APPROVED
+  REJECTED
+  ITEM_RECEIVED
+  REFUNDED
+}
+
+model User {
+  id           String          @id @default(uuid())
+  email        String          @unique
+  passwordHash String
+  name         String
+  phone        String?
+  role         Role            @default(CUSTOMER)
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+  addresses    Address[]
+  orders       Order[]
+  wishlist     Wishlist[]
+  reviews      Review[]
+  returnReqs   ReturnRequest[]
+
+  @@index([email])
+}
+
+model Address {
+  id         String   @id @default(uuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  fullName   String
+  phone      String
+  street     String
+  city       String
+  state      String
+  pincode    String
+  landmark   String?
+  isDefault  Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  orders     Order[]
+
+  @@index([userId])
+}
+
+model Category {
+  id          String    @id @default(uuid())
+  name        String    @unique
+  slug        String    @unique
+  description String?
+  imageUrl    String?
+  icon        String?
+  sortOrder   Int       @default(0)
+  isActive    Boolean   @default(true)
+  products    Product[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([slug])
+}
+
+model Product {
+  id               String            @id @default(uuid())
+  title            String
+  slug             String            @unique
+  description      String
+  shortDesc        String?
+  categoryId       String
+  category         Category          @relation(fields: [categoryId], references: [id])
+  mrp              Float             // Maximum Retail Price
+  sellingPrice     Float             // Customer price
+  images           String[]          // Array of image URLs
+  thumbnail        String
+  badge            String?           // e.g. "Trending", "Best Seller", "50% Off"
+  rating           Float             @default(4.5)
+  reviewCount      Int               @default(12)
+  isTrending       Boolean           @default(false)
+  isBestSeller     Boolean           @default(false)
+  isNewArrival     Boolean           @default(false)
+  isActive         Boolean           @default(true)
+  specifications   Json?             // Key-value pairs
+  warrantyInfo     String?           @default("7-Day Replacement Guarantee")
+  codAvailable     Boolean           @default(true)
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  variants         ProductVariant[]
+  supplierProducts SupplierProduct[]
+  orderItems       OrderItem[]
+  reviews          Review[]
+  wishlist         Wishlist[]
+  inventory        Inventory[]
+
+  @@index([slug])
+  @@index([categoryId])
+}
+
+model ProductVariant {
+  id         String      @id @default(uuid())
+  productId  String
+  product    Product     @relation(fields: [productId], references: [id], onDelete: Cascade)
+  sku        String      @unique
+  title      String
+  priceDiff  Float       @default(0)
+  attributes Json        // e.g. { "color": "Midnight Blue", "size": "Standard" }
+  stock      Int         @default(50)
+  createdAt  DateTime    @default(now())
+  orderItems OrderItem[]
+
+  @@index([productId])
+}
+
+model Supplier {
+  id                  String            @id @default(uuid())
+  name                String            @unique
+  slug                String            @unique
+  code                String            @unique // e.g. "DEODAP", "MEESHO", "BHARAT_DIRECT"
+  status              SupplierStatus    @default(ACTIVE)
+  integrationType     IntegrationType   @default(MOCK_DEODAP)
+  contactEmail        String?
+  contactPhone        String?
+  reliabilityScore    Float             @default(94.5) // Percentage 0-100
+  avgDeliveryDays     Float             @default(3.5)
+  returnScore         Float             @default(92.0)
+  apiEndpoint         String?
+  apiKey              String?
+  notes               String?
+  createdAt           DateTime          @default(now())
+  updatedAt           DateTime          @updatedAt
+  supplierProducts    SupplierProduct[]
+  supplierOrders      SupplierOrder[]
+  inventory           Inventory[]
+
+  @@index([code])
+}
+
+model SupplierProduct {
+  id                 String          @id @default(uuid())
+  supplierId         String
+  supplier           Supplier        @relation(fields: [supplierId], references: [id])
+  productId          String
+  product            Product         @relation(fields: [productId], references: [id], onDelete: Cascade)
+  externalProductId  String
+  costPrice          Float           // Wholesale cost from supplier
+  shippingCost       Float           @default(50) // Shipping charged by supplier
+  stock              Int             @default(100)
+  isAvailable        Boolean         @default(true)
+  leadTimeDays       Int             @default(3)
+  lastSyncedAt       DateTime        @default(now())
+  supplierOrders     SupplierOrder[]
+
+  @@unique([supplierId, externalProductId])
+  @@index([productId])
+  @@index([supplierId])
+}
+
+model Inventory {
+  id             String    @id @default(uuid())
+  productId      String
+  product        Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
+  supplierId     String
+  supplier       Supplier  @relation(fields: [supplierId], references: [id])
+  totalStock     Int       @default(100)
+  reservedStock  Int       @default(0)
+  availableStock Int       @default(100)
+  lowStockAlert  Int       @default(15)
+  updatedAt      DateTime  @updatedAt
+
+  @@unique([productId, supplierId])
+  @@index([productId])
+}
+
+model Order {
+  id                String           @id @default(uuid())
+  orderNumber       String           @unique // e.g. "BC-10042"
+  userId            String
+  user              User             @relation(fields: [userId], references: [id])
+  addressId         String
+  address           Address          @relation(fields: [addressId], references: [id])
+  status            OrderStatus      @default(PENDING_PAYMENT)
+  subtotal          Float
+  shippingFee       Float            @default(0)
+  discount          Float            @default(0)
+  couponCode        String?
+  totalAmount       Float
+  estimatedProfit   Float            @default(0) // Internal admin metric
+  paymentMethod     PaymentMethod    @default(UPI_MANUAL)
+  notes             String?
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+  items             OrderItem[]
+  payments          Payment[]
+  shipments         Shipment[]
+  statusLogs        OrderStatusLog[]
+  supplierOrders    SupplierOrder[]
+  returnRequests    ReturnRequest[]
+
+  @@index([userId])
+  @@index([orderNumber])
+  @@index([status])
+}
+
+model OrderItem {
+  id               String          @id @default(uuid())
+  orderId          String
+  order            Order           @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId        String
+  product          Product         @relation(fields: [productId], references: [id])
+  variantId        String?
+  variant          ProductVariant? @relation(fields: [variantId], references: [id])
+  quantity         Int             @default(1)
+  unitPrice        Float
+  totalPrice       Float
+  supplierCost     Float?          // Wholesale item cost from selected supplier
+  selectedSupplier String?
+  returnRequests   ReturnRequest[]
+
+  @@index([orderId])
+  @@index([productId])
+}
+
+model Payment {
+  id             String        @id @default(uuid())
+  orderId        String
+  order          Order         @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  method         PaymentMethod
+  status         PaymentStatus @default(PENDING)
+  amount         Float
+  currency       String        @default("INR")
+  transactionRef String?       // UPI UTR number or Gateway payment ID
+  upiPayerVpa    String?
+  verifiedBy     String?       // Admin user ID who approved manual payment
+  verifiedAt     DateTime?
+  notes          String?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  @@index([orderId])
+  @@index([transactionRef])
+}
+
+model Shipment {
+  id            String      @id @default(uuid())
+  orderId       String
+  order         Order       @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  carrier       String      @default("Delhivery Express") // e.g. Delhivery, BlueDart, Shadowfax
+  trackingNumber String      @unique
+  trackingUrl   String?
+  currentStatus String      @default("Shipment manifest created")
+  estimatedDelivery DateTime?
+  shippedAt     DateTime?
+  deliveredAt   DateTime?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  @@index([orderId])
+}
+
+model OrderStatusLog {
+  id        String      @id @default(uuid())
+  orderId   String
+  order     Order       @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  fromStatus OrderStatus?
+  toStatus  OrderStatus
+  note      String?
+  actorRole String      @default("SYSTEM") // SYSTEM, ADMIN, CUSTOMER, SUPPLIER
+  createdAt DateTime    @default(now())
+
+  @@index([orderId])
+}
+
+model SupplierOrder {
+  id                 String              @id @default(uuid())
+  orderId            String
+  order              Order               @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  supplierId         String
+  supplier           Supplier            @relation(fields: [supplierId], references: [id])
+  supplierProductId  String?
+  supplierProduct    SupplierProduct?    @relation(fields: [supplierProductId], references: [id])
+  externalOrderId    String?             // Order ID returned by DeoDap/supplier
+  status             SupplierOrderStatus @default(PENDING)
+  wholesaleCost      Float
+  shippingCharged    Float
+  trackingNumber     String?
+  carrier            String?
+  errorMessage       String?
+  sentPayload        Json?
+  receivedResponse   Json?
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+
+  @@index([orderId])
+  @@index([supplierId])
+}
+
+model ReturnRequest {
+  id          String       @id @default(uuid())
+  orderId     String
+  order       Order        @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  orderItemId String
+  orderItem   OrderItem    @relation(fields: [orderItemId], references: [id])
+  userId      String
+  user        User         @relation(fields: [userId], references: [id])
+  reason      String
+  description String?
+  imageUrl    String?
+  status      ReturnStatus @default(REQUESTED)
+  adminNote   String?
+  refundAmount Float?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  @@index([orderId])
+  @@index([userId])
+}
+
+model Coupon {
+  id              String    @id @default(uuid())
+  code            String    @unique
+  discountPercent Float?
+  discountAmount  Float?
+  minOrderValue   Float     @default(0)
+  maxDiscount     Float?
+  expiresAt       DateTime?
+  isActive        Boolean   @default(true)
+  usedCount       Int       @default(0)
+  createdAt       DateTime  @default(now())
+
+  @@index([code])
+}
+
+model Wishlist {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  productId String
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([userId, productId])
+  @@index([userId])
+}
+
+model Review {
+  id        String   @id @default(uuid())
+  productId String
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  rating    Int      @default(5)
+  title     String
+  comment   String
+  verifiedPurchase Boolean @default(true)
+  createdAt DateTime @default(now())
+
+  @@index([productId])
+}
+
+model ImportJob {
+  id          String      @id @default(uuid())
+  supplierId  String?
+  fileName    String
+  totalRows   Int         @default(0)
+  successRows Int         @default(0)
+  failedRows  Int         @default(0)
+  status      String      @default("COMPLETED")
+  logs        String?
+  createdAt   DateTime    @default(now())
+  rows        ImportRow[]
+}
+
+model ImportRow {
+  id          String    @id @default(uuid())
+  jobId       String
+  job         ImportJob @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  rowNumber   Int
+  rawTitle    String
+  status      String    // "SUCCESS" or "FAILED"
+  errorReason String?
+  createdAt   DateTime  @default(now())
+
+  @@index([jobId])
+}
+
+model Setting {
+  id          String   @id @default(uuid())
+  key         String   @unique
+  value       String
+  description String?
+  updatedAt   DateTime @updatedAt
+
+  @@index([key])
+}
