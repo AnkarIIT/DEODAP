@@ -64,6 +64,9 @@ router.post('/', requireAuth, async (req: AuthRequest, res) => {
     }));
 
     const initialStatus = paymentMethod === 'COD' ? 'FULFILMENT_PENDING' : 'PENDING_PAYMENT';
+    // UPI: payment must be verified before fulfilment. COD: sale confirmed at checkout,
+    // so supplier automation may pick the order up immediately.
+    const initialPaymentStatus = paymentMethod === 'COD' ? 'PAID' : 'PENDING_PAYMENT';
 
     const order: Order = {
       id: orderId,
@@ -83,6 +86,8 @@ router.post('/', requireAuth, async (req: AuthRequest, res) => {
         landmark: address.landmark,
       },
       status: initialStatus,
+      paymentStatus: initialPaymentStatus,
+      automationStatus: 'PENDING',
       subtotal: totals.subtotal,
       shippingFee: totals.shippingFee,
       discount: totals.discount,
@@ -154,6 +159,8 @@ router.post('/', requireAuth, async (req: AuthRequest, res) => {
         id: order.id,
         orderNumber: order.orderNumber,
         status: order.status,
+        paymentStatus: order.paymentStatus,
+        automationStatus: order.automationStatus,
         totalAmount: order.totalAmount,
         paymentMethod: order.paymentMethod,
         shippingAddress: order.shippingAddress,
@@ -174,6 +181,8 @@ router.get('/', requireAuth, async (req: AuthRequest, res) => {
       id: o.id,
       orderNumber: o.orderNumber,
       status: o.status,
+      paymentStatus: o.paymentStatus,
+      automationStatus: o.automationStatus,
       subtotal: o.subtotal,
       shippingFee: o.shippingFee,
       discount: o.discount,
@@ -217,6 +226,8 @@ router.get('/:id', requireAuth, async (req: AuthRequest, res) => {
       id: order.id,
       orderNumber: order.orderNumber,
       status: order.status,
+      paymentStatus: order.paymentStatus,
+      automationStatus: order.automationStatus,
       subtotal: order.subtotal,
       shippingFee: order.shippingFee,
       discount: order.discount,

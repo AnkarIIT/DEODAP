@@ -58,6 +58,12 @@ export type ReturnStatus =
   | 'ITEM_RECEIVED'
   | 'REFUNDED';
 
+/**
+ * Supplier/catalog automation job status on an order.
+ * PENDING -> PROCESSING -> COMPLETED | FAILED
+ */
+export type AutomationStatus = 'PENDING' | 'PROCESSING' | 'COMPLETED' | 'FAILED';
+
 export interface User {
   id: string;
   email: string;
@@ -316,6 +322,7 @@ export interface SupplierOrder {
   orderId: string;
   supplierId: string;
   supplierName: string;
+  supplierProductId?: string;
   externalOrderId?: string;
   status: SupplierOrderStatus;
   wholesaleCost: number;
@@ -389,6 +396,13 @@ export interface Order {
     landmark?: string;
   };
   status: OrderStatus;
+  // Flat automation contract fields (mirror of DB columns)
+  paymentStatus: string; // PENDING_PAYMENT | PAYMENT_REVIEW | PAID | REFUNDED | FAILED
+  automationStatus: AutomationStatus; // PENDING | PROCESSING | COMPLETED | FAILED
+  supplierId?: string;
+  supplierProductId?: string;
+  supplierOrderId?: string;
+  supplierOrderStatus?: string;
   subtotal: number;
   shippingFee: number;
   discount: number;

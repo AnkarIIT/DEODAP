@@ -251,13 +251,33 @@ model Inventory {
 }
 
 model Order {
-  id              String           @id @default(uuid())
-  orderNumber     String           @unique // e.g. "BC-10042"
-  userId          String
-  user            User             @relation(fields: [userId], references: [id])
-  addressId       String
-  address         Address          @relation(fields: [addressId], references: [id])
-  status          OrderStatus      @default(PENDING_PAYMENT)
+  id          String    @id @default(uuid())
+  orderNumber String    @unique // e.g. "BC-10042"
+  userId      String
+  user        User      @relation(fields: [userId], references: [id])
+  addressId   String
+  // Relation field renamed to avoid collision with the flat "address" column below
+  deliveryAddress Address @relation(fields: [addressId], references: [id])
+
+  // ----------------------------------------------------------------------
+  // Flat automation contract (source of truth for supplier/catalog automation)
+  // Mirrors the Order surface the DEODAP automation worker reads/writes.
+  // ----------------------------------------------------------------------
+  customerName      String? // snapshot: customer / address fullName
+  phone             String? // snapshot: customer phone
+  address           String? // snapshot: street address line
+  city              String?
+  state             String?
+  pincode           String?
+  paymentStatus     String   @default("PENDING_PAYMENT") // PENDING_PAYMENT | PAYMENT_REVIEW | PAID | REFUNDED | FAILED
+  orderStatus       OrderStatus @default(PENDING_PAYMENT) // same enum as customer-facing status
+  automationStatus  String   @default("PENDING") // PENDING | PROCESSING | COMPLETED | FAILED
+  supplierId        String? // primary supplier assigned for fulfilment
+  supplierProductId String? // single-item orders: the chosen supplierProduct mapping
+  supplierOrderId   String? // the pending/placed SupplierOrder row id
+  supplierOrderStatus String? // PENDING | PLACED | CONFIRMED | SHIPPED | ... from SupplierOrder
+  // ----------------------------------------------------------------------
+
   subtotal        Float
   shippingFee     Float            @default(0)
   discount        Float            @default(0)
@@ -277,7 +297,8 @@ model Order {
 
   @@index([userId])
   @@index([orderNumber])
-  @@index([status])
+  @@index([orderStatus])
+  @@index([paymentStatus, automationStatus])
 }
 
 model OrderItem {

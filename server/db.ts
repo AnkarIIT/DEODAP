@@ -192,6 +192,7 @@ function mapSupplierOrder(so: any): SupplierOrder {
     orderId: so.orderId,
     supplierId: so.supplierId,
     supplierName: so.supplier?.name ?? '',
+    supplierProductId: so.supplierProductId ?? undefined,
     externalOrderId: so.externalOrderId ?? undefined,
     status: so.status,
     wholesaleCost: so.wholesaleCost,
@@ -231,20 +232,26 @@ function mapOrder(o: any): Order {
     id: o.id,
     orderNumber: o.orderNumber,
     userId: o.userId,
-    customerName: o.user?.name,
+    customerName: o.customerName ?? o.user?.name,
     customerEmail: o.user?.email,
-    customerPhone: o.user?.phone ?? undefined,
+    customerPhone: o.phone ?? o.user?.phone ?? undefined,
     addressId: o.addressId,
     shippingAddress: {
-      fullName: o.address?.fullName ?? o.user?.name ?? '',
-      phone: o.address?.phone ?? o.user?.phone ?? '',
-      street: o.address?.street ?? '',
-      city: o.address?.city ?? '',
-      state: o.address?.state ?? '',
-      pincode: o.address?.pincode ?? '',
-      landmark: o.address?.landmark ?? undefined,
+      fullName: o.customerName ?? o.deliveryAddress?.fullName ?? o.user?.name ?? '',
+      phone: o.phone ?? o.deliveryAddress?.phone ?? o.user?.phone ?? '',
+      street: o.address ?? o.deliveryAddress?.street ?? '',
+      city: o.city ?? o.deliveryAddress?.city ?? '',
+      state: o.state ?? o.deliveryAddress?.state ?? '',
+      pincode: o.pincode ?? o.deliveryAddress?.pincode ?? '',
+      landmark: o.deliveryAddress?.landmark ?? undefined,
     },
-    status: o.status,
+    status: o.orderStatus,
+    paymentStatus: o.paymentStatus ?? 'PENDING_PAYMENT',
+    automationStatus: o.automationStatus ?? 'PENDING',
+    supplierId: o.supplierId ?? undefined,
+    supplierProductId: o.supplierProductId ?? undefined,
+    supplierOrderId: o.supplierOrderId ?? undefined,
+    supplierOrderStatus: o.supplierOrderStatus ?? undefined,
     subtotal: o.subtotal,
     shippingFee: o.shippingFee,
     discount: o.discount,
@@ -287,7 +294,7 @@ function mapOrder(o: any): Order {
 
 const ORDER_INCLUDE = {
   user: true,
-  address: true,
+  deliveryAddress: true,
   items: { include: { product: true, variant: true } },
   payments: true,
   shipments: true,
@@ -744,7 +751,20 @@ class Database {
         orderNumber: order.orderNumber,
         userId: order.userId,
         addressId: order.addressId,
-        status: order.status as any,
+        // Flat automation contract snapshot
+        customerName: order.customerName ?? null,
+        phone: order.customerPhone ?? null,
+        address: order.shippingAddress?.street ?? null,
+        city: order.shippingAddress?.city ?? null,
+        state: order.shippingAddress?.state ?? null,
+        pincode: order.shippingAddress?.pincode ?? null,
+        paymentStatus: order.paymentStatus ?? 'PENDING_PAYMENT',
+        orderStatus: order.status as any,
+        automationStatus: order.automationStatus ?? 'PENDING',
+        supplierId: order.supplierId ?? null,
+        supplierProductId: order.supplierProductId ?? null,
+        supplierOrderId: order.supplierOrderId ?? null,
+        supplierOrderStatus: order.supplierOrderStatus ?? null,
         subtotal: order.subtotal,
         shippingFee: order.shippingFee,
         discount: order.discount,
@@ -774,21 +794,39 @@ class Database {
   }
 
   public async updateOrder(id: string, updates: Partial<Order>): Promise<Order | null> {
-    const data: any = { ...updates, updatedAt: new Date() };
-    delete data.id;
-    delete data.orderNumber;
-    delete data.userId;
-    delete data.addressId;
-    delete data.items;
-    delete data.payments;
-    delete data.shipments;
-    delete data.statusLogs;
-    delete data.supplierOrders;
-    delete data.returnRequests;
-    delete data.shippingAddress;
-    delete data.customerName;
-    delete data.customerEmail;
-    delete data.customerPhone;
+    const data: any = { updatedAt: new Date() };
+    // Map runtime status -> DB orderStatus column
+    if (updates.status !== undefined) data.orderStatus = updates.status as any;
+    // Flat automation contract fields pass through directly
+    for (const key of [
+      'paymentStatus',
+      'automationStatus',
+      'supplierId',
+      'supplierProductId',
+      'supplierOrderId',
+      'supplierOrderStatus',
+      'customerName',
+      'phone',
+      'address',
+      'city',
+      'state',
+      'pincode',
+    ] as const) {
+      if ((updates as any)[key] !== undefined) data[key] = (updates as any)[key];
+    }
+    // Other scalar updates (totals, notes, etc.)
+    for (const key of [
+      'subtotal',
+      'shippingFee',
+      'discount',
+      'couponCode',
+      'totalAmount',
+      'estimatedProfit',
+      'paymentMethod',
+      'notes',
+    ] as const) {
+      if ((updates as any)[key] !== undefined) data[key] = (updates as any)[key];
+    }
     const o = await prisma.order.update({ where: { id }, data, include: ORDER_INCLUDE });
     return mapOrder(o);
   }
@@ -910,6 +948,7 @@ class Database {
         id: so.id,
         orderId,
         supplierId: so.supplierId,
+        supplierProductId: so.supplierProductId ?? null,
         externalOrderId: so.externalOrderId ?? null,
         status: so.status as any,
         wholesaleCost: so.wholesaleCost,

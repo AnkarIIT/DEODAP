@@ -58,8 +58,30 @@ export class OrderStateMachine {
       console.warn(`Non-standard transition from ${currentStatus} to ${newStatus} permitted by admin action.`);
     }
 
-    // Update order status
-    const updated = await db.updateOrder(order.id, { status: newStatus });
+    // Update order status + flat automation contract fields
+    const updates: any = { status: newStatus };
+
+    // --- paymentStatus mirror ---
+    if (newStatus === 'PAYMENT_REVIEW') updates.paymentStatus = 'PAYMENT_REVIEW';
+    else if (newStatus === 'PAID') updates.paymentStatus = 'PAID';
+    else if (newStatus === 'REFUNDED' || newStatus === 'RETURNED') updates.paymentStatus = 'REFUNDED';
+
+    // --- automationStatus lifecycle (PENDING -> PROCESSING -> COMPLETED | FAILED) ---
+    if (newStatus === 'PAID' || newStatus === 'FULFILMENT_PENDING' || newStatus === 'SUPPLIER_SELECTION' || newStatus === 'SUPPLIER_ORDER_PENDING') {
+      // Job queued for the supplier automation worker
+      updates.automationStatus = 'PENDING';
+    } else if (newStatus === 'SUPPLIER_ORDERED') {
+      // Job finished successfully: supplier order placed
+      updates.automationStatus = 'COMPLETED';
+      this.syncSupplierFields(updates, order);
+    } else if (newStatus === 'SUPPLIER_ORDER_FAILED' || newStatus === 'FAILED') {
+      updates.automationStatus = 'FAILED';
+    } else if (newStatus === 'CANCELLED' || newStatus === 'REFUNDED' || newStatus === 'RETURNED') {
+      // Order exited the pipeline: close any queued automation job
+      updates.automationStatus = 'COMPLETED';
+    }
+
+    const updated = await db.updateOrder(order.id, updates);
     if (!updated) throw new Error('Failed to update order');
 
     // Add log
@@ -119,6 +141,20 @@ export class OrderStateMachine {
   }
 
   /**
+   * Mirror the primary SupplierOrder onto the flat order-level contract fields.
+   * Single-item orders also record the exact supplierProduct mapping.
+   */
+  private static syncSupplierFields(target: any, order: Order): void {
+    const primary = order.supplierOrders && order.supplierOrders.length > 0 ? order.supplierOrders[0] : null;
+    if (primary) {
+      target.supplierId = primary.supplierId;
+      target.supplierOrderId = primary.id;
+      target.supplierOrderStatus = primary.status;
+      target.supplierProductId = primary.supplierProductId ?? null;
+    }
+  }
+
+  /**
    * Build the fulfilment packet for an order WITHOUT changing its status:
    *  1. Assigns the lowest-cost eligible supplier to each item via SupplierRouter.
    *  2. Records a SupplierOrder with status PENDING (no external order id yet).
@@ -158,11 +194,20 @@ export class OrderStateMachine {
     await db.updateOrderItems(order.id, order.items);
 
     if (!order.supplierOrders || order.supplierOrders.length === 0) {
-      await db.addSupplierOrder(order.id, {
+      // Single-item orders can pin the exact supplierProduct mapping id.
+      let supplierProductId: string | undefined;
+      if (order.items.length === 1) {
+        const best = await supplierRouter.recommendBestSupplier(order.items[0].productId, order.items[0].quantity);
+        const spRows = await db.getSupplierProducts(order.items[0].productId, best?.supplierId);
+        supplierProductId = spRows[0]?.id ?? undefined;
+      }
+
+      const created = await db.addSupplierOrder(order.id, {
         id: `so-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
         orderId: order.id,
         supplierId: primarySupplierId,
         supplierName: primarySupplierName,
+        supplierProductId,
         status: 'PENDING',
         wholesaleCost: Math.round(totalWholesale),
         shippingCharged: Math.round(shippingCharged || 45),
@@ -175,6 +220,15 @@ export class OrderStateMachine {
         notes: 'Fulfilment packet created. Awaiting supplier order placement by operator.',
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
+      });
+
+      // Mirror the new SupplierOrder onto the flat order-level contract fields
+      // so automation can read supplierId / supplierOrderId directly.
+      await db.updateOrder(order.id, {
+        supplierId: created?.supplierId,
+        supplierOrderId: created?.id,
+        supplierOrderStatus: created?.status,
+        supplierProductId: supplierProductId,
       });
     }
 
