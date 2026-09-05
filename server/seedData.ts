@@ -1,4 +1,5 @@
 import bcrypt from 'bcryptjs';
+import crypto from 'crypto';
 import {
   Category,
   Product,
@@ -13,9 +14,10 @@ import {
   ReturnRequest,
 } from './types';
 
-// Password hash for 'admin123' and 'customer123'
-const ADMIN_HASH = bcrypt.hashSync('admin123', 8);
-const CUSTOMER_HASH = bcrypt.hashSync('customer123', 8);
+// Dev seed credentials - NEVER hardcode production passwords.
+// Support: environment variable (CUSTOMER_PASSWORD) or random generated.
+const CUSTOMER_PASSWORD = process.env.CUSTOMER_PASSWORD || crypto.randomUUID() + 'C7';
+const CUSTOMER_HASH = bcrypt.hashSync(CUSTOMER_PASSWORD, 10);
 
 export const SEED_CATEGORIES: Category[] = [
   {
@@ -169,16 +171,6 @@ export const SEED_SUPPLIERS: Supplier[] = [
 ];
 
 export const SEED_USERS: User[] = [
-  {
-    id: 'usr-admin',
-    email: 'admin@bharatcart.in',
-    passwordHash: ADMIN_HASH,
-    name: 'Vikramaditya Sharma',
-    phone: '+91 98765 43210',
-    role: 'ADMIN',
-    createdAt: new Date(Date.now() - 60 * 86400000).toISOString(),
-    updatedAt: new Date().toISOString(),
-  },
   {
     id: 'usr-customer-1',
     email: 'customer@bharatcart.in',

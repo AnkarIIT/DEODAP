@@ -16,7 +16,7 @@ router.post('/', requireAuth, async (req: AuthRequest, res) => {
   try {
     const { items, address, paymentMethod, couponCode, notes } = req.body;
     const userId = req.user!.id;
-    const user = db.findUserById(userId);
+    const user = await db.findUserById(userId);
 
     if (!items || !Array.isArray(items) || items.length === 0) {
       return res.status(400).json({ error: 'Your cart is empty.' });
@@ -27,7 +27,7 @@ router.post('/', requireAuth, async (req: AuthRequest, res) => {
     }
 
     // Calculate totals server-side
-    const totals = PricingEngine.calculateOrderTotals(items, couponCode, paymentMethod);
+    const totals = await PricingEngine.calculateOrderTotals(items, couponCode, paymentMethod);
 
     const orderNumber = `BC-${Math.floor(10000 + Math.random() * 90000)}`;
     const orderId = `ord-${Date.now()}`;
@@ -35,7 +35,7 @@ router.post('/', requireAuth, async (req: AuthRequest, res) => {
     // Save address if it doesn't have an ID
     let addressId = address.id;
     if (!addressId) {
-      const savedAddr = db.createAddress({
+      const savedAddr = await db.createAddress({
         id: `addr-${Date.now()}`,
         userId,
         fullName: address.fullName,
@@ -63,7 +63,7 @@ router.post('/', requireAuth, async (req: AuthRequest, res) => {
       supplierCost: item.wholesaleCost, // Saved internally for admin profit calculation
     }));
 
-    const initialStatus = paymentMethod === 'COD' ? 'CONFIRMED' : 'PENDING_PAYMENT';
+    const initialStatus = paymentMethod === 'COD' ? 'FULFILMENT_PENDING' : 'PENDING_PAYMENT';
 
     const order: Order = {
       id: orderId,
@@ -109,7 +109,7 @@ router.post('/', requireAuth, async (req: AuthRequest, res) => {
       supplierOrders: [],
     };
 
-    db.createOrder(order);
+    await db.createOrder(order);
 
     // Initialize payment
     let paymentResult: any = null;
@@ -133,8 +133,19 @@ router.post('/', requireAuth, async (req: AuthRequest, res) => {
       // Move order to PAID state
       await OrderStateMachine.transition(order.id, 'PAID', 'Sandbox payment approved', 'SYSTEM');
     } else if (paymentMethod === 'COD') {
-      // Move to SUPPLIER_SELECTION directly
-      await OrderStateMachine.transition(order.id, 'SUPPLIER_SELECTION', 'Cash on Delivery order placed', 'SYSTEM');
+      // Record COD payment intent (status PENDING - collected at doorstep)
+      await db.addPayment(order.id, {
+        id: `pay-cod-${Date.now()}`,
+        orderId: order.id,
+        method: 'COD',
+        status: 'PENDING',
+        amount: order.totalAmount,
+        currency: 'INR',
+        notes: 'Cash on Delivery - collect at doorstep',
+        createdAt: new Date().toISOString(),
+      });
+      // COD orders are fulfilable immediately: build the fulfilment packet
+      await OrderStateMachine.prepareFulfilment(order.id);
     }
 
     res.status(201).json({
@@ -155,9 +166,9 @@ router.post('/', requireAuth, async (req: AuthRequest, res) => {
 });
 
 // GET /api/orders - Customer orders list
-router.get('/', requireAuth, (req: AuthRequest, res) => {
+router.get('/', requireAuth, async (req: AuthRequest, res) => {
   try {
-    const orders = db.getOrders(req.user!.id);
+    const orders = await db.getOrders(req.user!.id);
     // Sanitize customer order views (remove supplier cost and supplier identity)
     const sanitized = orders.map((o) => ({
       id: o.id,
@@ -189,15 +200,15 @@ router.get('/', requireAuth, (req: AuthRequest, res) => {
 });
 
 // GET /api/orders/:id - Detailed order tracking view
-router.get('/:id', requireAuth, (req: AuthRequest, res) => {
+router.get('/:id', requireAuth, async (req: AuthRequest, res) => {
   try {
-    const order = db.findOrderByIdOrNumber(req.params.id);
+    const order = await db.findOrderByIdOrNumber(req.params.id);
     if (!order) {
       return res.status(404).json({ error: 'Order not found.' });
     }
 
-    // Ownership check: must be owner or admin
-    if (order.userId !== req.user!.id && req.user!.role !== 'ADMIN') {
+    // Ownership check: must be the order owner
+    if (order.userId !== req.user!.id) {
       return res.status(403).json({ error: 'Unauthorized access to this order.' });
     }
 
@@ -248,10 +259,10 @@ router.get('/:id', requireAuth, (req: AuthRequest, res) => {
 // POST /api/orders/:id/cancel
 router.post('/:id/cancel', requireAuth, async (req: AuthRequest, res) => {
   try {
-    const order = db.findOrderByIdOrNumber(req.params.id);
+    const order = await db.findOrderByIdOrNumber(req.params.id);
     if (!order) return res.status(404).json({ error: 'Order not found.' });
 
-    if (order.userId !== req.user!.id && req.user!.role !== 'ADMIN') {
+    if (order.userId !== req.user!.id) {
       return res.status(403).json({ error: 'Unauthorized.' });
     }
 
@@ -290,7 +301,7 @@ router.post('/:orderNumber/utr', requireAuth, async (req: AuthRequest, res) => {
       });
     }
 
-    const order = db.findOrderByIdOrNumber(orderNumber);
+    const order = await db.findOrderByIdOrNumber(orderNumber);
     if (!order) {
       return res.status(404).json({
         success: false,
@@ -298,7 +309,7 @@ router.post('/:orderNumber/utr', requireAuth, async (req: AuthRequest, res) => {
       });
     }
 
-    if (order.userId !== req.user!.id && req.user!.role !== 'ADMIN') {
+    if (order.userId !== req.user!.id) {
       return res.status(403).json({
         success: false,
         error: { code: 'UNAUTHORIZED', message: 'You are not authorized to update this order' },
@@ -316,15 +327,16 @@ router.post('/:orderNumber/utr', requireAuth, async (req: AuthRequest, res) => {
         amount: order.totalAmount,
         currency: 'INR',
         transactionRef: cleanUtr,
-        notes: `Customer submitted UTR: ${cleanUtr}`,
+        notes: `Customer submitted UTR: ${cleanUtr}. Pending manual bank reconciliation.`,
         createdAt: new Date().toISOString(),
       };
-      db.addPayment(order.id, payment);
+      await db.addPayment(order.id, payment);
     } else {
-      payment.transactionRef = cleanUtr;
-      payment.status = 'UNDER_REVIEW';
-      payment.notes = `Customer submitted UTR: ${cleanUtr}. Pending manual bank reconciliation.`;
-      db.save();
+      await db.updatePayment(payment.id, {
+        transactionRef: cleanUtr,
+        status: 'UNDER_REVIEW',
+        notes: `Customer submitted UTR: ${cleanUtr}. Pending manual bank reconciliation.`,
+      });
     }
 
     // Important: Transition to PAYMENT_REVIEW (NOT automatically PAID or VERIFIED)
@@ -351,9 +363,9 @@ router.post('/:orderNumber/utr', requireAuth, async (req: AuthRequest, res) => {
 });
 
 // GET /api/orders/:orderNumber/tracking - Detailed public/customer tracking timeline
-router.get('/:orderNumber/tracking', (req, res) => {
+router.get('/:orderNumber/tracking', async (req, res) => {
   try {
-    const order = db.findOrderByIdOrNumber(req.params.orderNumber);
+    const order = await db.findOrderByIdOrNumber(req.params.orderNumber);
     if (!order) {
       return res.status(404).json({
         success: false,
@@ -362,8 +374,8 @@ router.get('/:orderNumber/tracking', (req, res) => {
     }
 
     const isConfirmed = !['PENDING_PAYMENT', 'CANCELLED', 'FAILED'].includes(order.status);
-    const isPaymentReviewed = ['PAYMENT_REVIEW', 'PAID', 'CONFIRMED', 'SUPPLIER_SELECTION', 'SUPPLIER_ORDER_PENDING', 'SUPPLIER_ORDERED', 'PROCESSING', 'SHIPPED', 'OUT_FOR_DELIVERY', 'DELIVERED'].includes(order.status);
-    const isProcuring = ['SUPPLIER_ORDERED', 'PROCESSING', 'SHIPPED', 'OUT_FOR_DELIVERY', 'DELIVERED'].includes(order.status);
+    const isPaymentReviewed = ['PAYMENT_REVIEW', 'PAID', 'FULFILMENT_PENDING', 'CONFIRMED', 'SUPPLIER_SELECTION', 'SUPPLIER_ORDER_PENDING', 'SUPPLIER_ORDERED', 'SUPPLIER_ORDER_FAILED', 'PROCESSING', 'SHIPPED', 'OUT_FOR_DELIVERY', 'DELIVERED'].includes(order.status);
+    const isProcuring = ['FULFILMENT_PENDING', 'SUPPLIER_ORDERED', 'SUPPLIER_ORDER_FAILED', 'PROCESSING', 'SHIPPED', 'OUT_FOR_DELIVERY', 'DELIVERED'].includes(order.status);
     const isShipped = ['SHIPPED', 'OUT_FOR_DELIVERY', 'DELIVERED'].includes(order.status);
     const isOut = ['OUT_FOR_DELIVERY', 'DELIVERED'].includes(order.status);
     const isDelivered = order.status === 'DELIVERED';
@@ -440,7 +452,7 @@ router.get('/:orderNumber/tracking', (req, res) => {
 router.post('/:orderNumber/payment', requireAuth, async (req: AuthRequest, res) => {
   try {
     const { method } = req.body;
-    const order = db.findOrderByIdOrNumber(req.params.orderNumber);
+    const order = await db.findOrderByIdOrNumber(req.params.orderNumber);
     if (!order) {
       return res.status(404).json({
         success: false,

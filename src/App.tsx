@@ -17,18 +17,16 @@ import { CustomerOrdersList } from './components/customer/CustomerOrdersList';
 import { WishlistView } from './components/customer/WishlistView';
 import { AccountView } from './components/customer/AccountView';
 import { ReturnRequestModal } from './components/customer/ReturnRequestModal';
-import { AdminDashboard } from './components/admin/AdminDashboard';
 import { api } from './lib/api';
 import { Product, Category, Order } from './types';
 import { SlidersHorizontal, AlertCircle, Tag, ArrowRight } from 'lucide-react';
 import { BRAND_CONFIG } from './config/brand';
 
 function MainContent() {
-  const { user, isAdmin } = useAuth();
   const { addToCart } = useCart();
 
   // Navigation and Views
-  const [activeView, setActiveView] = useState<'store' | 'orders' | 'wishlist' | 'admin' | 'account'>('store');
+  const [activeView, setActiveView] = useState<'store' | 'orders' | 'wishlist' | 'account'>('store');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [sortBy, setSortBy] = useState<'featured' | 'price-asc' | 'price-desc' | 'rating'>('featured');
@@ -152,9 +150,6 @@ function MainContent() {
 
       {/* Main Container */}
       <main className="flex-1">
-        {/* VIEW: Admin Dashboard */}
-        {activeView === 'admin' && <AdminDashboard />}
-
         {/* VIEW: Customer Orders Tracking Detail */}
         {activeView === 'orders' && trackingOrderId && (
           <OrderTrackingView

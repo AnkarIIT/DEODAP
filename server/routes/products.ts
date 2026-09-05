@@ -5,7 +5,7 @@ import { PricingEngine } from '../pricing/PricingEngine';
 const router = Router();
 
 // GET /api/products (with filtering, search, sorting & pagination)
-router.get('/', (req, res) => {
+router.get('/', async (req, res) => {
   try {
     const {
       categoryId,
@@ -21,7 +21,7 @@ router.get('/', (req, res) => {
       limit = '16',
     } = req.query;
 
-    const allProducts = db.getProducts({
+    const allProducts = await db.getProducts({
       categoryId: categoryId ? String(categoryId) : undefined,
       search: search ? String(search) : undefined,
       minPrice: minPrice ? parseFloat(String(minPrice)) : undefined,
@@ -57,20 +57,20 @@ router.get('/', (req, res) => {
 });
 
 // GET /api/products/:slugOrId
-router.get('/:slugOrId', (req, res) => {
+router.get('/:slugOrId', async (req, res) => {
   try {
-    const product = db.findProductByIdOrSlug(req.params.slugOrId);
+    const product = await db.findProductByIdOrSlug(req.params.slugOrId);
     if (!product || !product.isActive) {
       return res.status(404).json({ error: 'Product not found or has been discontinued.' });
     }
 
     const safeProduct = PricingEngine.sanitizeProductForCustomer(product);
-    const reviews = db.getReviewsForProduct(product.id);
+    const reviews = await db.getReviewsForProduct(product.id);
 
     // Get related products from same category
-    const related = db
-      .getProducts({ categoryId: product.categoryId })
-      .filter((p) => p.id !== product.id)
+    const allRelated = await db.getProducts({ categoryId: product.categoryId });
+    const related = allRelated
+      .filter((p: any) => p.id !== product.id)
       .slice(0, 4)
       .map(PricingEngine.sanitizeProductForCustomer);
 
@@ -85,14 +85,15 @@ router.get('/:slugOrId', (req, res) => {
 });
 
 // GET /api/categories
-router.get('/categories/all', (req, res) => {
+router.get('/categories/all', async (req, res) => {
   try {
-    const categories = db.getCategories();
+    const categories = await db.getCategories();
     // Add product counts
-    const withCounts = categories.map((cat) => {
-      const count = db.getProducts({ categoryId: cat.id }).length;
-      return { ...cat, productCount: count };
-    });
+    const withCounts: any[] = [];
+    for (const cat of categories) {
+      const catProducts = await db.getProducts({ categoryId: cat.id });
+      withCounts.push({ ...cat, productCount: catProducts.length });
+    }
     res.json({ categories: withCounts });
   } catch (err: any) {
     res.status(500).json({ error: err.message || 'Failed to fetch categories.' });

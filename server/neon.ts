@@ -1,12 +1,15 @@
 import { neon } from '@neondatabase/serverless';
 import 'dotenv/config';
 
-const connectionString = process.env.DATABASE_URL || 'postgresql://neondb_owner:npg_Vbu5FD4rqyLj@ep-soft-math-ayufw2he-pooler.c-5.us-east-2.aws.neon.tech/neondb?sslmode=require';
+const connectionString = process.env.DATABASE_URL || '';
 
 type NeonClient = ReturnType<typeof neon>;
 let sqlClient: NeonClient | null = null;
 
 export function getNeonSql(): NeonClient {
+  if (!connectionString) {
+    throw new Error('DATABASE_URL environment variable is not configured. Add it to your .env file (see .env.example).');
+  }
   if (!sqlClient) {
     sqlClient = neon(connectionString);
   }
@@ -194,8 +197,8 @@ export async function saveStoreToNeon(storeData: any): Promise<void> {
               id, slug, title, selling_price, mrp, category_slug, is_active, rating, total_reviews, tags, metadata, updated_at
             ) VALUES (
               ${p.id}, ${p.slug}, ${p.title}, ${p.sellingPrice}, ${p.mrp}, ${p.categorySlug || null},
-              ${p.isActive !== false}, ${p.rating || 4.5}, ${p.totalReviews || 0},
-              ${p.tags || []}, ${JSON.stringify(p)}::jsonb, CURRENT_TIMESTAMP
+              ${p.isActive !== false}, ${p.rating || 4.5}, ${p.reviewCount || 0},
+              ${[p.categoryName, p.badge, p.supplierCode].filter(Boolean)}, ${JSON.stringify(p)}::jsonb, CURRENT_TIMESTAMP
             )
             ON CONFLICT (id) DO UPDATE SET
               title = EXCLUDED.title,
@@ -238,8 +241,8 @@ export async function saveStoreToNeon(storeData: any): Promise<void> {
               id, order_number, user_id, customer_name, customer_phone, customer_email,
               total_amount, payment_method, status, raw_order, updated_at
             ) VALUES (
-              ${o.id}, ${o.orderNumber}, ${o.userId}, ${o.customer?.fullName || ''},
-              ${o.customer?.phone || ''}, ${o.customer?.email || ''}, ${o.totalAmount},
+              ${o.id}, ${o.orderNumber}, ${o.userId}, ${o.customerName || ''},
+              ${o.customerPhone || ''}, ${o.customerEmail || ''}, ${o.totalAmount},
               ${o.paymentMethod}, ${o.status}, ${JSON.stringify(o)}::jsonb, CURRENT_TIMESTAMP
             )
             ON CONFLICT (id) DO UPDATE SET

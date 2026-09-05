@@ -16,10 +16,10 @@ router.post('/', requireAuth, async (req: AuthRequest, res) => {
       return res.status(400).json({ error: 'Order ID and return reason are required.' });
     }
 
-    const order = db.findOrderByIdOrNumber(orderId);
+    const order = await db.findOrderByIdOrNumber(orderId);
     if (!order) return res.status(404).json({ error: 'Order not found.' });
 
-    if (order.userId !== userId && req.user!.role !== 'ADMIN') {
+    if (order.userId !== userId) {
       return res.status(403).json({ error: 'Unauthorized.' });
     }
 
@@ -45,7 +45,7 @@ router.post('/', requireAuth, async (req: AuthRequest, res) => {
       updatedAt: new Date().toISOString(),
     };
 
-    db.createReturnRequest(newReturn);
+    await db.createReturnRequest(newReturn);
 
     // Transition state machine
     await OrderStateMachine.transition(order.id, 'RETURN_REQUESTED', `Return requested: ${reason}`, 'CUSTOMER');
@@ -61,9 +61,9 @@ router.post('/', requireAuth, async (req: AuthRequest, res) => {
 });
 
 // GET /api/returns - Customer returns list
-router.get('/', requireAuth, (req: AuthRequest, res) => {
+router.get('/', requireAuth, async (req: AuthRequest, res) => {
   try {
-    const returns = db.getReturnRequests(req.user!.id);
+    const returns = await db.getReturnRequests(req.user!.id);
     res.json({ returns });
   } catch (err: any) {
     res.status(500).json({ error: err.message });

@@ -22,10 +22,10 @@ router.post('/submit-utr', requireAuth, async (req: AuthRequest, res) => {
       return res.status(400).json({ error: 'Please enter a valid 12-digit UPI reference (UTR) number.' });
     }
 
-    const order = db.findOrderByIdOrNumber(orderId);
+    const order = await db.findOrderByIdOrNumber(orderId);
     if (!order) return res.status(404).json({ error: 'Order not found.' });
 
-    if (order.userId !== req.user!.id && req.user!.role !== 'ADMIN') {
+    if (order.userId !== req.user!.id) {
       return res.status(403).json({ error: 'Unauthorized.' });
     }
 
@@ -36,18 +36,21 @@ router.post('/submit-utr', requireAuth, async (req: AuthRequest, res) => {
         id: `pay-${Date.now()}`,
         orderId: order.id,
         method: 'UPI_MANUAL',
-        status: 'PENDING',
+        status: 'UNDER_REVIEW',
         amount: order.totalAmount,
         currency: 'INR',
+        transactionRef: cleanUtr,
+        notes: `Customer submitted UTR: ${cleanUtr}. Waiting for admin bank verification.`,
         createdAt: new Date().toISOString(),
       };
-      db.addPayment(order.id, payment);
+      await db.addPayment(order.id, payment);
+    } else {
+      await db.updatePayment(payment.id, {
+        transactionRef: cleanUtr,
+        status: 'UNDER_REVIEW',
+        notes: `Customer submitted UTR: ${cleanUtr}. Waiting for admin bank verification.`,
+      });
     }
-
-    payment.transactionRef = cleanUtr;
-    payment.status = 'UNDER_REVIEW';
-    payment.notes = `Customer submitted UTR: ${cleanUtr}. Waiting for admin bank verification.`;
-    db.save();
 
     // Transition state machine to PAYMENT_REVIEW
     await OrderStateMachine.transition(
@@ -72,7 +75,7 @@ router.post('/submit-utr', requireAuth, async (req: AuthRequest, res) => {
 router.post('/pay-mock', requireAuth, async (req: AuthRequest, res) => {
   try {
     const { orderId } = req.body;
-    const order = db.findOrderByIdOrNumber(orderId);
+    const order = await db.findOrderByIdOrNumber(orderId);
     if (!order) return res.status(404).json({ error: 'Order not found.' });
 
     const result = await mockProvider.createPayment({

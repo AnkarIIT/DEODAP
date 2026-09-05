@@ -1,6 +1,9 @@
 import 'dotenv/config';
 import express from 'express';
 import path from 'path';
+import helmet from 'helmet';
+import cors from 'cors';
+import rateLimit from 'express-rate-limit';
 import { createServer as createViteServer } from 'vite';
 import { db } from './server/db';
 import { authMiddleware } from './server/middleware/auth';
@@ -11,16 +14,68 @@ import orderRoutes from './server/routes/orders';
 import paymentRoutes from './server/routes/payments';
 import returnRoutes from './server/routes/returns';
 import accountRoutes from './server/routes/account';
-import adminRoutes from './server/routes/admin';
+import { catalogSyncWorker } from './server/automation/CatalogSyncWorker';
+import { NextFunction, Request, Response } from 'express';
 
 async function startServer() {
   const app = express();
-  const PORT = 3000;
+  const PORT = Number(process.env.PORT) || 3000;
+
+  // Trust proxy for correct client IPs behind reverse proxy (rate limiting)
+  app.set('trust proxy', 1);
+
+  // Security headers
+  app.use(
+    helmet({
+      contentSecurityPolicy: false,
+      crossOriginEmbedderPolicy: false,
+    })
+  );
+
+  // CORS - allow only configured frontend origin(s)
+  const allowedOrigins = (process.env.FRONTEND_URL || 'http://localhost:3000')
+    .split(',')
+    .map((o) => o.trim())
+    .filter(Boolean);
+  app.use(
+    cors({
+      origin: allowedOrigins,
+      credentials: false,
+    })
+  );
+
+  // Rate limiting
+  const generalApiLimiter = rateLimit({
+    windowMs: 60 * 1000,
+    limit: 150,
+    standardHeaders: 'draft-8',
+    legacyHeaders: false,
+    message: { error: 'Too many requests. Please try again later.' },
+  });
+
+  const authLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    limit: 60,
+    standardHeaders: 'draft-8',
+    legacyHeaders: false,
+    message: { error: 'Too many attempts. Please try again later.' },
+  });
+
+  const paymentLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    limit: 90,
+    standardHeaders: 'draft-8',
+    legacyHeaders: false,
+    message: { error: 'Too many payment requests. Please try again later.' },
+  });
 
   // Global Middlewares
   app.use(express.json({ limit: '10mb' }));
   app.use(express.urlencoded({ extended: true, limit: '10mb' }));
   app.use(authMiddleware);
+  app.use('/api', generalApiLimiter);
+  app.use('/api/auth', authLimiter);
+  app.use('/api/payments', paymentLimiter);
 
   // Health check
   app.get('/api/health', (req, res) => {
@@ -51,7 +106,6 @@ async function startServer() {
   app.use('/api/payments', paymentRoutes);
   app.use('/api/returns', returnRoutes);
   app.use('/api/account', accountRoutes);
-  app.use('/api/admin', adminRoutes);
 
   // Vite middleware for development vs static build in production
   if (process.env.NODE_ENV !== 'production') {
@@ -68,9 +122,42 @@ async function startServer() {
     });
   }
 
-  app.listen(PORT, '0.0.0.0', () => {
-    console.log(`[BharatCart Backend] Server running on http://0.0.0.0:${PORT}`);
+  // Centralized error handler - never leak stack traces in production
+  app.use((err: any, req: Request, res: Response, _next: NextFunction) => {
+    const status = err.status || err.statusCode || 500;
+    const message = process.env.NODE_ENV === 'production' ? 'Something went wrong. Please try again.' : err.message || 'Something went wrong.';
+    console.error(`[ErrorHandler] ${status} ${req.method} ${req.originalUrl}`, err?.stack || err);
+    res.status(status).json({
+      success: false,
+      error: {
+        code: err.code || 'INTERNAL_ERROR',
+        message,
+      },
+    });
   });
+
+  const server = app.listen(PORT, '0.0.0.0', () => {
+    console.log(`[Shoply Backend] Server running on http://0.0.0.0:${PORT}`);
+    // Start the catalog sync scheduler explicitly - never on import.
+    catalogSyncWorker.start();
+  });
+
+  // Graceful shutdown
+  const shutdown = (signal: string) => {
+    console.log(`\n[Shoply Backend] Received ${signal}. Shutting down gracefully...`);
+    catalogSyncWorker.stop();
+    server.close(() => {
+      console.log('[Shoply Backend] HTTP server closed. Bye.');
+      process.exit(0);
+    });
+    setTimeout(() => {
+      console.error('[Shoply Backend] Forced exit after timeout.');
+      process.exit(1);
+    }, 8000).unref();
+  };
+
+  process.on('SIGTERM', () => shutdown('SIGTERM'));
+  process.on('SIGINT', () => shutdown('SIGINT'));
 }
 
 startServer().catch((err) => {

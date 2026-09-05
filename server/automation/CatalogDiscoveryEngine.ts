@@ -341,14 +341,14 @@ export class CatalogDiscoveryEngine {
   /**
    * Filter, score, and rank incoming raw supplier products
    */
-  public static evaluateCandidates(
+  public static async evaluateCandidates(
     rawProducts: RawSupplierProduct[],
     options: DiscoveryEngineFilterOptions = {}
-  ): EvaluatedProductCandidate[] {
+  ): Promise<EvaluatedProductCandidate[]> {
     const minQualityScore = options.minQualityScore ?? 65;
     const requireInStock = options.requireInStock ?? true;
     const minMargin = options.minMargin ?? 100;
-    const categories = db.getCategories();
+    const categories = await db.getCategories();
 
     const candidates: EvaluatedProductCandidate[] = [];
 
@@ -411,14 +411,14 @@ export class CatalogDiscoveryEngine {
   /**
    * Transforms eligible candidates into store Products & SupplierProducts
    */
-  public static publishEligibleCandidates(
+  public static async publishEligibleCandidates(
     candidates: EvaluatedProductCandidate[],
     limit: number = 250
-  ): {
+  ): Promise<{
     publishedProducts: Product[];
     createdCount: number;
     updatedCount: number;
-  } {
+  }> {
     const eligible = candidates.filter((c) => c.isEligible);
     // Sort by Quality Score descending (high quality first)
     eligible.sort((a, b) => b.qualityScore - a.qualityScore);
@@ -428,12 +428,15 @@ export class CatalogDiscoveryEngine {
     let createdCount = 0;
     let updatedCount = 0;
 
-    const deodapSupplier = db.getSuppliers().find((s) => s.code === 'DEODAP') || db.getSuppliers()[0];
+    const supplierList = await db.getSuppliers();
+    const deodapSupplier = supplierList.find((s) => s.code === 'DEODAP') || supplierList[0];
 
     for (const candidate of targetList) {
+      const foundBySlug = await db.findProductByIdOrSlug(candidate.slug);
+      const allProducts = foundBySlug ? [] : await db.getProducts();
       const existingProduct =
-        db.findProductByIdOrSlug(candidate.slug) ||
-        db.getProducts().find((p) => p.supplierProductId === candidate.raw.externalId);
+        foundBySlug ||
+        allProducts.find((p) => p.supplierProductId === candidate.raw.externalId);
 
       if (existingProduct) {
         // Update product pricing and stock
@@ -446,7 +449,22 @@ export class CatalogDiscoveryEngine {
         existingProduct.updatedAt = new Date().toISOString();
         existingProduct.isActive = true;
 
-        db.updateProduct(existingProduct.id, existingProduct);
+        await db.updateProduct(existingProduct.id, existingProduct);
+
+        // Sync wholesale mapping cost/stock for DEODAP
+        if (deodapSupplier) {
+          const mappings = await db.getSupplierProducts(existingProduct.id, deodapSupplier.id);
+          const mapping =
+            mappings.find((m) => m.externalProductId === candidate.raw.externalId) || mappings[0];
+          if (mapping) {
+            await db.updateSupplierProduct(mapping.id, {
+              costPrice: candidate.costPrice,
+              stock: candidate.raw.availableQuantity,
+              isAvailable: true,
+            });
+          }
+        }
+
         publishedProducts.push(existingProduct);
         updatedCount++;
       } else {
@@ -484,24 +502,24 @@ export class CatalogDiscoveryEngine {
           updatedAt: new Date().toISOString(),
         };
 
-        db.createProduct(newProduct);
+        await db.createProduct(newProduct);
         publishedProducts.push(newProduct);
         createdCount++;
 
         // Add to supplier product mapping
         const sp: SupplierProduct = {
-          id: `sp-${newProduct.id}-${deodapSupplier.id}`,
-          supplierId: deodapSupplier.id,
+          id: `sp-${newProduct.id}-${deodapSupplier?.id ?? 'deodap'}`,
+          supplierId: deodapSupplier?.id ?? '',
           productId: newProduct.id,
           externalProductId: candidate.raw.externalId,
           costPrice: candidate.costPrice,
           shippingCost: 45,
           stock: candidate.raw.availableQuantity,
           isAvailable: true,
-          leadTimeDays: deodapSupplier.avgDeliveryDays || 3,
+          leadTimeDays: deodapSupplier?.avgDeliveryDays || 3,
           lastSyncedAt: new Date().toISOString(),
         };
-        db.createSupplierProduct(sp);
+        if (deodapSupplier) await db.createSupplierProduct(sp);
       }
     }
 

@@ -70,33 +70,48 @@ export class DeoDapFeedConnector implements SupplierConnector {
   }
 
   /**
-   * Fetch paginated products from DeoDap Shopify feed
+   * Fetch paginated products from DeoDap Shopify feed.
+   * Retries transient failures (429 / 5xx) with exponential backoff.
    */
   public async fetchFeed(options: SupplierFeedFetchOptions = {}): Promise<SupplierFeedResult> {
     const page = options.page || 1;
     const limit = Math.min(250, options.limit || 50); // Shopify max is 250
     const url = `${this.baseUrl}/products.json?limit=${limit}&page=${page}`;
 
-    try {
-      const controller = new AbortController();
-      const timeout = setTimeout(() => controller.abort(), 12000);
+    const MAX_ATTEMPTS = 4;
+    let lastError: any = null;
 
-      const res = await fetch(url, {
-        signal: controller.signal,
-        headers: {
-          'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-          'Accept': 'application/json',
-        },
-      });
+    for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
+      try {
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 15000);
 
-      clearTimeout(timeout);
+        const res = await fetch(url, {
+          signal: controller.signal,
+          headers: {
+            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+            'Accept': 'application/json',
+          },
+        });
 
-      if (!res.ok) {
-        throw new Error(`DeoDap API responded with HTTP ${res.status}: ${res.statusText}`);
-      }
+        clearTimeout(timeout);
 
-      const data: any = await res.json();
-      const rawProducts = Array.isArray(data?.products) ? data.products : [];
+        if (res.status === 429 || res.status >= 500) {
+          const retryAfter = Number(res.headers.get('retry-after')) || 0;
+          const waitMs = Math.min(20000, (retryAfter || 2) * 1000 * Math.pow(2, attempt - 1));
+          console.warn(`[DeoDap Feed] HTTP ${res.status} on page ${page} (attempt ${attempt}/${MAX_ATTEMPTS}). Retrying in ${waitMs}ms...`);
+          res.body?.cancel?.();
+          lastError = new Error(`DeoDap API responded with HTTP ${res.status}`);
+          await new Promise((resolve) => setTimeout(resolve, waitMs));
+          continue;
+        }
+
+        if (!res.ok) {
+          throw new Error(`DeoDap API responded with HTTP ${res.status}: ${res.statusText}`);
+        }
+
+        const data: any = await res.json();
+        const rawProducts = Array.isArray(data?.products) ? data.products : [];
 
       const parsed: RawSupplierProduct[] = rawProducts.map((p: any) => {
         // Evaluate variants
@@ -150,6 +165,9 @@ export class DeoDapFeedConnector implements SupplierConnector {
       console.warn(`[DeoDap Feed] Fetch error on page ${page}:`, err.message);
       throw err;
     }
+  }
+
+  throw lastError || new Error(`DeoDap feed fetch failed for page ${page} after ${MAX_ATTEMPTS} attempts.`);
   }
 }
 

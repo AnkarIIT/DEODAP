@@ -1,16 +1,14 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { User, Role } from '../types';
+import { User } from '../types';
 import { api, setStoredToken, getStoredToken } from '../lib/api';
 
 interface AuthContextType {
   user: User | null;
   loading: boolean;
   isAuthenticated: boolean;
-  isAdmin: boolean;
   login: (email: string, password: string) => Promise<void>;
   register: (name: string, email: string, password: string, phone?: string) => Promise<void>;
   logout: () => void;
-  switchRole: (role: Role) => Promise<void>;
   refreshUser: () => Promise<void>;
 }
 
@@ -24,24 +22,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       const token = getStoredToken();
       if (!token) {
-        // Auto-login as demo customer on first boot for smooth experience
-        const res = await api.demoLogin('CUSTOMER');
-        setStoredToken(res.token);
-        setUser(res.user);
+        setUser(null);
+        setLoading(false);
         return;
       }
       const data = await api.getMe();
       setUser(data.user);
     } catch (err) {
-      console.warn('Auto auth fetch failed, fallback to demo customer:', err);
-      try {
-        const res = await api.demoLogin('CUSTOMER');
-        setStoredToken(res.token);
-        setUser(res.user);
-      } catch {
-        setStoredToken(null);
-        setUser(null);
-      }
+      console.warn('Session invalid. Clearing stored token:', err);
+      setStoredToken(null);
+      setUser(null);
     } finally {
       setLoading(false);
     }
@@ -68,30 +58,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(null);
   };
 
-  const switchRole = async (role: Role) => {
-    setLoading(true);
-    try {
-      const res = await api.demoLogin(role);
-      setStoredToken(res.token);
-      setUser(res.user);
-    } catch (err) {
-      console.error('Role switch failed:', err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   return (
     <AuthContext.Provider
       value={{
         user,
         loading,
         isAuthenticated: !!user,
-        isAdmin: user?.role === 'ADMIN',
         login,
         register,
         logout,
-        switchRole,
         refreshUser,
       }}
     >

@@ -4,7 +4,6 @@ import {
   Heart,
   Search,
   User,
-  ShieldCheck,
   Truck,
   RotateCcw,
   Sparkles,
@@ -15,7 +14,6 @@ import {
   Tag,
   ChevronDown,
 } from 'lucide-react';
-import { useAuth } from '../../context/AuthContext';
 import { useCart } from '../../context/CartContext';
 import { useWishlist } from '../../context/WishlistContext';
 import { Category } from '../../types';
@@ -27,8 +25,8 @@ interface HeaderProps {
   onSelectCategory: (categorySlug: string) => void;
   searchQuery: string;
   onSearchChange: (q: string) => void;
-  activeView: 'store' | 'orders' | 'wishlist' | 'admin' | 'account';
-  setActiveView: (view: 'store' | 'orders' | 'wishlist' | 'admin' | 'account') => void;
+  activeView: 'store' | 'orders' | 'wishlist' | 'account';
+  setActiveView: (view: 'store' | 'orders' | 'wishlist' | 'account') => void;
   onOpenDeals?: () => void;
 }
 
@@ -42,7 +40,6 @@ export const Header: React.FC<HeaderProps> = ({
   setActiveView,
   onOpenDeals,
 }) => {
-  const { user, isAdmin, switchRole } = useAuth();
   const { totalQuantity, openCart } = useCart();
   const { wishlistCount } = useWishlist();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -66,43 +63,6 @@ export const Header: React.FC<HeaderProps> = ({
             <span className="hidden md:inline-flex items-center gap-1 text-neutral-300">
               <RotateCcw className="w-3.5 h-3.5 text-neutral-400" /> 7-Day Easy Returns
             </span>
-          </div>
-
-          {/* Quick Demo Switcher */}
-          <div className="flex items-center space-x-2 shrink-0">
-            <span className="text-neutral-400 text-[11px] hidden sm:inline">Role View:</span>
-            <button
-              id="header-switch-customer-btn"
-              onClick={() => {
-                if (user?.role !== 'CUSTOMER') switchRole('CUSTOMER');
-                setActiveView('store');
-              }}
-              className={`px-2.5 py-0.5 rounded-md text-[11px] sm:text-xs font-semibold transition-all cursor-pointer ${
-                activeView !== 'admin'
-                  ? 'bg-[#FF5A36] text-white shadow-xs'
-                  : 'text-neutral-400 hover:text-white hover:bg-neutral-800'
-              }`}
-            >
-              Customer Store
-            </button>
-            <button
-              id="header-switch-admin-btn"
-              onClick={() => {
-                if (user?.role !== 'ADMIN') switchRole('ADMIN');
-                setActiveView('admin');
-              }}
-              className={`px-2.5 py-0.5 rounded-md text-[11px] sm:text-xs font-semibold flex items-center gap-1 transition-all cursor-pointer ${
-                activeView === 'admin'
-                  ? 'bg-[#FF5A36] text-white shadow-xs'
-                  : 'text-neutral-300 hover:text-white hover:bg-neutral-800'
-              }`}
-            >
-              <ShieldCheck className="w-3 h-3 text-[#FF5A36]" />
-              Admin Operations
-              {user?.role === 'ADMIN' && (
-                <span className="bg-emerald-500 text-[9px] px-1 rounded text-white font-bold ml-0.5">ACTIVE</span>
-              )}
-            </button>
           </div>
         </div>
       </div>

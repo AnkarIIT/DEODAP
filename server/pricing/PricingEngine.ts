@@ -6,18 +6,18 @@ export class PricingEngine {
    * Calculates dynamic retail price from wholesale cost and category markup rules.
    * Standardizes price to popular Indian ecommerce endings (e.g. ₹99, ₹49, ₹29).
    */
-  public static calculateRetailPrice(
+  public static async calculateRetailPrice(
     wholesaleCost: number,
     shippingCost: number = 45,
     categoryId?: string
-  ): {
+  ): Promise<{
     landedCost: number;
     sellingPrice: number;
     mrp: number;
     marginAmount: number;
     marginPercent: number;
-  } {
-    const rules = db.getPricingRule();
+  }> {
+    const rules = await db.getPricingRule();
     const landedCost = wholesaleCost + shippingCost;
 
     // Determine markup percent
@@ -60,16 +60,9 @@ export class PricingEngine {
    * STRICT DTO WHITELIST: Supplier cost, margin, and supplier identity never exist in this schema.
    */
   public static sanitizeProductForCustomer(product: Product): CustomerProductDTO {
-    // Resolve category name and slug cleanly
-    let categorySlug = product.categorySlug;
-    let categoryName = product.categoryName;
-    if ((!categorySlug || !categoryName) && product.categoryId) {
-      const cat = db.getCategories().find((c) => c.id === product.categoryId || c.slug === product.categoryId);
-      if (cat) {
-        if (!categorySlug) categorySlug = cat.slug;
-        if (!categoryName) categoryName = cat.name;
-      }
-    }
+    // Supplier cost/margin/supplier identity never exist in this schema.
+    const categorySlug = product.categorySlug;
+    const categoryName = product.categoryName;
 
     // Construct pure CustomerProductDTO with whitelist
     return {
@@ -103,12 +96,12 @@ export class PricingEngine {
    * Calculate cart order totals server-side:
    * NEVER trust client prices! Always re-fetch from database!
    */
-  public static calculateOrderTotals(
+  public static async calculateOrderTotals(
     items: Array<{ productId: string; quantity: number }>,
     couponCode?: string,
     paymentMethod?: string
   ) {
-    const rules = db.getPricingRule();
+    const rules = await db.getPricingRule();
     let subtotal = 0;
     const validatedItems: Array<{
       productId: string;
@@ -123,7 +116,7 @@ export class PricingEngine {
     let totalWholesaleCost = 0;
 
     for (const item of items) {
-      const product = db.findProductByIdOrSlug(item.productId);
+      const product = await db.findProductByIdOrSlug(item.productId);
       if (!product || !product.isActive) {
         throw new Error(`Product ${item.productId} is no longer available.`);
       }
@@ -134,7 +127,7 @@ export class PricingEngine {
       subtotal += totalPrice;
 
       // Find lowest supplier cost for profit estimation
-      const sps = db.getSupplierProducts(product.id);
+      const sps = await db.getSupplierProducts(product.id);
       const minCost = sps.length > 0 ? Math.min(...sps.map((s) => s.costPrice + s.shippingCost)) : unitPrice * 0.6;
       totalWholesaleCost += minCost * quantity;
 
@@ -162,7 +155,7 @@ export class PricingEngine {
     let appliedCoupon: any = null;
 
     if (couponCode) {
-      const coupon = db.findCoupon(couponCode);
+      const coupon = await db.findCoupon(couponCode);
       if (coupon && subtotal >= coupon.minOrderValue) {
         appliedCoupon = coupon;
         if (coupon.discountAmount) {

@@ -15,7 +15,7 @@ export class ManualUPIPaymentProvider implements PaymentProvider {
   public providerName = 'MANUAL_UPI';
 
   async createPayment(params: CreatePaymentParams): Promise<PaymentInitializationResult> {
-    const settings = db.getSettings();
+    const settings = await db.getSettings();
     const payeeVpa = settings.upiMerchantId || '8235058525@sbi';
     const payeeName = settings.upiMerchantName || 'Shoply';
 
@@ -27,7 +27,7 @@ export class ManualUPIPaymentProvider implements PaymentProvider {
     const paymentId = `pay-upi-${Date.now()}`;
 
     // Record in database
-    db.addPayment(params.orderId, {
+    await db.addPayment(params.orderId, {
       id: paymentId,
       orderId: params.orderId,
       method: 'UPI_MANUAL',

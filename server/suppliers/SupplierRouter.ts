@@ -28,11 +28,11 @@ export class SupplierRouter {
    * Evaluate all available suppliers for a given product and quantity.
    * Considers: Landed Cost (cost + shipping), Stock, Delivery Speed, Reliability, and Return Score.
    */
-  public evaluateSuppliersForProduct(
+  public async evaluateSuppliersForProduct(
     productId: string,
     quantity: number = 1
-  ): SupplierEvaluationResult[] {
-    const mappings = db.getSupplierProducts(productId);
+  ): Promise<SupplierEvaluationResult[]> {
+    const mappings = await db.getSupplierProducts(productId);
     if (!mappings || mappings.length === 0) {
       return [];
     }
@@ -41,8 +41,9 @@ export class SupplierRouter {
     const landedCosts = mappings.map((m) => m.costPrice + m.shippingCost);
     const minLandedCost = Math.min(...landedCosts);
 
-    const evaluated: SupplierEvaluationResult[] = mappings.map((sp) => {
-      const supplier = db.findSupplierById(sp.supplierId);
+    const evaluated: SupplierEvaluationResult[] = [];
+    for (const sp of mappings) {
+      const supplier = await db.findSupplierById(sp.supplierId);
       const landedCost = sp.costPrice + sp.shippingCost;
 
       const isStockSufficient = sp.stock >= quantity && sp.isAvailable;
@@ -72,7 +73,7 @@ export class SupplierRouter {
         costScore * 0.35 + deliveryScore * 0.25 + reliabilityScore * 0.25 + returnScore * 0.15
       );
 
-      return {
+      const evaluatedResult: SupplierEvaluationResult = {
         supplierId: sp.supplierId,
         supplierName: supplier?.name || sp.supplierName || 'Unknown Wholesale Vendor',
         supplierCode: supplier?.code || sp.supplierCode || 'SUPPLIER',
@@ -87,7 +88,8 @@ export class SupplierRouter {
         isEligible,
         ineligibilityReason: ineligibilityReason || undefined,
       };
-    });
+      evaluated.push(evaluatedResult);
+    }
 
     // Sort by composite score descending (highest overall value first)
     return evaluated.sort((a, b) => {
@@ -100,8 +102,8 @@ export class SupplierRouter {
   /**
    * Recommend the single best eligible supplier for an item
    */
-  public recommendBestSupplier(productId: string, quantity: number = 1): SupplierEvaluationResult | null {
-    const results = this.evaluateSuppliersForProduct(productId, quantity);
+  public async recommendBestSupplier(productId: string, quantity: number = 1): Promise<SupplierEvaluationResult | null> {
+    const results = await this.evaluateSuppliersForProduct(productId, quantity);
     const eligible = results.filter((r) => r.isEligible);
     return eligible.length > 0 ? eligible[0] : null;
   }
@@ -114,24 +116,25 @@ export class SupplierRouter {
     supplierId: string,
     itemsToFulfill: Array<{ productId: string; quantity: number }>
   ): Promise<SupplierOrderResponse> {
-    const order = db.findOrderByIdOrNumber(orderId);
+    const order = await db.findOrderByIdOrNumber(orderId);
     if (!order) throw new Error(`Order ${orderId} not found`);
 
-    const supplier = db.findSupplierById(supplierId);
+    const supplier = await db.findSupplierById(supplierId);
     if (!supplier) throw new Error(`Supplier ${supplierId} not found`);
 
     const adapter = this.getAdapter(supplier.code);
 
     // Map internal product IDs to external supplier product IDs
-    const payloadItems = itemsToFulfill.map((item) => {
-      const sps = db.getSupplierProducts(item.productId, supplierId);
+    const payloadItems: Array<{ externalProductId: string; quantity: number; expectedCost: number }> = [];
+    for (const item of itemsToFulfill) {
+      const sps = await db.getSupplierProducts(item.productId, supplierId);
       const sp = sps[0];
-      return {
+      payloadItems.push({
         externalProductId: sp ? sp.externalProductId : `EXT-${item.productId}`,
         quantity: item.quantity,
         expectedCost: sp ? sp.costPrice : 200,
-      };
-    });
+      });
+    }
 
     const payload: SupplierOrderPayload = {
       internalOrderId: order.id,
@@ -147,16 +150,16 @@ export class SupplierRouter {
     // Calculate wholesale costs
     let totalWholesale = 0;
     let totalShipping = 45;
-    itemsToFulfill.forEach((item) => {
-      const sps = db.getSupplierProducts(item.productId, supplierId);
+    for (const item of itemsToFulfill) {
+      const sps = await db.getSupplierProducts(item.productId, supplierId);
       if (sps.length > 0) {
         totalWholesale += sps[0].costPrice * item.quantity;
         totalShipping = sps[0].shippingCost;
       }
-    });
+    }
 
     // Record supplier order in database
-    db.addSupplierOrder(order.id, {
+    await db.addSupplierOrder(order.id, {
       id: `so-${Date.now()}`,
       orderId: order.id,
       supplierId: supplier.id,
@@ -174,7 +177,7 @@ export class SupplierRouter {
 
     // If tracking number exists, add shipment
     if (response.trackingNumber) {
-      db.addShipment(order.id, {
+      await db.addShipment(order.id, {
         id: `shp-${Date.now()}`,
         orderId: order.id,
         carrier: response.carrier || 'Delhivery Express',

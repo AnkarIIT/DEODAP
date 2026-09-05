@@ -97,11 +97,11 @@ export class ProductImporter {
     let createdProducts = 0;
     let updatedProducts = 0;
 
-    const suppliers = db.getSuppliers();
-    const categories = db.getCategories();
+    const suppliers = await db.getSuppliers();
+    const categories = await db.getCategories();
 
-    rows.forEach((row, idx) => {
-      const rowNum = idx + 2; // header is 1
+    for (const row of rows) {
+      const rowNum = rows.indexOf(row) + 2; // header is 1
       try {
         if (!row.title || !row.supplier_product_id) {
           errors.push({ rowNumber: rowNum, reason: 'Missing mandatory title or supplier_product_id', rawTitle: row.title });
@@ -135,11 +135,11 @@ export class ProductImporter {
         }
 
         // Calculate dynamic retail pricing using PricingEngine
-        const pricing = PricingEngine.calculateRetailPrice(costPrice, shippingCost, category.id);
+        const pricing = await PricingEngine.calculateRetailPrice(costPrice, shippingCost, category.id);
 
         // Check for duplicate by slug or supplier product id
         const slug = this.slugify(normalizedTitle);
-        let product = db.findProductByIdOrSlug(slug);
+        let product = await db.findProductByIdOrSlug(slug);
 
         if (product) {
           // Update existing product
@@ -147,7 +147,7 @@ export class ProductImporter {
           product.sellingPrice = pricing.sellingPrice;
           product.description = row.description || product.description;
           product.thumbnail = row.image_url || product.thumbnail;
-          db.updateProduct(product.id, product);
+          await db.updateProduct(product.id, product);
           updatedProducts++;
         } else {
           // Create new product
@@ -175,14 +175,14 @@ export class ProductImporter {
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString(),
           };
-          db.createProduct(product);
+          await db.createProduct(product);
           createdProducts++;
         }
 
         // Create or update supplier product mapping
-        const existingMappings = db.getSupplierProducts(product.id, supplier.id);
+        const existingMappings = await db.getSupplierProducts(product.id, supplier.id);
         if (existingMappings.length > 0) {
-          db.updateSupplierProduct(existingMappings[0].id, {
+          await db.updateSupplierProduct(existingMappings[0].id, {
             costPrice,
             shippingCost,
             stock,
@@ -201,14 +201,14 @@ export class ProductImporter {
             leadTimeDays: supplier.avgDeliveryDays ? Math.round(supplier.avgDeliveryDays) : 3,
             lastSyncedAt: new Date().toISOString(),
           };
-          db.createSupplierProduct(sp);
+          await db.createSupplierProduct(sp);
         }
 
         successRows++;
       } catch (err: any) {
         errors.push({ rowNumber: rowNum, reason: err.message || 'Processing error', rawTitle: row.title });
       }
-    });
+    }
 
     return {
       jobId,

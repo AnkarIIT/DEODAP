@@ -23,8 +23,8 @@ export class CatalogSyncWorker {
   private isRunning: boolean = false;
 
   private constructor() {
-    this.initDefaultSyncState();
-    this.startScheduler();
+    // NOTE: state is loaded lazily via loadState() when the worker starts.
+    // Scheduler is NOT started automatically on import.
   }
 
   public static getInstance(): CatalogSyncWorker {
@@ -34,8 +34,8 @@ export class CatalogSyncWorker {
     return CatalogSyncWorker.instance;
   }
 
-  private initDefaultSyncState() {
-    const settings = db.getSettings();
+  private async loadState() {
+    const settings = await db.getSettings();
     const savedState = settings['catalog_sync_state'];
     if (savedState) {
       try {
@@ -52,11 +52,10 @@ export class CatalogSyncWorker {
     }
   }
 
-  private persistState() {
+  private async persistState() {
     try {
-      db.updateSetting('catalog_sync_state', JSON.stringify(this.state));
-      db.updateSetting('catalog_sync_logs', JSON.stringify(this.logs.slice(0, 20))); // Keep last 20 logs
-      db.save();
+      await db.updateSetting('catalog_sync_state', JSON.stringify(this.state));
+      await db.updateSetting('catalog_sync_logs', JSON.stringify(this.logs.slice(0, 20))); // Keep last 20 logs
     } catch (err) {
       console.warn('[Sync Worker] Failed to persist sync state:', err);
     }
@@ -76,6 +75,28 @@ export class CatalogSyncWorker {
     }, intervalMs);
   }
 
+  private stopScheduler() {
+    if (this.intervalTimer) {
+      clearInterval(this.intervalTimer);
+      this.intervalTimer = null;
+      console.log('[Catalog Sync Worker] Background scheduler stopped.');
+    }
+  }
+
+  public async start() {
+    try {
+      await this.loadState();
+    } catch (err) {
+      console.warn('[Sync Worker] Failed to load persisted state:', err);
+    }
+    this.startScheduler();
+  }
+
+  public async stop() {
+    await this.persistState();
+    this.stopScheduler();
+  }
+
   public getState(): CatalogSyncState {
     return { ...this.state };
   }
@@ -84,7 +105,7 @@ export class CatalogSyncWorker {
     return [...this.logs];
   }
 
-  public updateConfig(updates: Partial<CatalogSyncState>) {
+  public async updateConfig(updates: Partial<CatalogSyncState>) {
     if (updates.minQualityScore !== undefined) {
       this.state.minQualityScore = Math.max(30, Math.min(95, updates.minQualityScore));
     }
@@ -95,7 +116,7 @@ export class CatalogSyncWorker {
       this.state.autoSyncIntervalHours = Math.max(1, Math.min(72, updates.autoSyncIntervalHours));
       this.startScheduler();
     }
-    this.persistState();
+    await this.persistState();
     return this.state;
   }
 
@@ -123,15 +144,16 @@ export class CatalogSyncWorker {
 
     try {
       console.log('[Catalog Sync Worker] Starting ingestion from DeoDap public feed...');
+      await this.loadState();
 
-      // 1. Fetch page 1 (50 products)
-      const feedPage1 = await deodapFeedConnector.fetchFeed({ limit: 50, page: 1 });
+      // 1. Fetch full Shopify pages (250/page) to fill the publish window
+      const feedPage1 = await deodapFeedConnector.fetchFeed({ limit: 250, page: 1 });
       let allRawProducts = [...feedPage1.products];
 
-      // 2. Fetch page 2 (50 products) if available to enrich catalog depth
+      // 2. Fetch page 2 (up to 500 raw products total) to enrich catalog depth
       if (feedPage1.hasMore) {
         try {
-          const feedPage2 = await deodapFeedConnector.fetchFeed({ limit: 50, page: 2 });
+          const feedPage2 = await deodapFeedConnector.fetchFeed({ limit: 250, page: 2 });
           allRawProducts.push(...feedPage2.products);
         } catch (p2Err: any) {
           console.warn('[Catalog Sync Worker] Page 2 fetch skipped:', p2Err.message);
@@ -141,7 +163,7 @@ export class CatalogSyncWorker {
       console.log(`[Catalog Sync Worker] Fetched ${allRawProducts.length} raw products from DeoDap.`);
 
       // 3. Evaluate & Filter using Discovery Engine
-      const candidates = CatalogDiscoveryEngine.evaluateCandidates(allRawProducts, {
+      const candidates = await CatalogDiscoveryEngine.evaluateCandidates(allRawProducts, {
         minQualityScore: this.state.minQualityScore,
         minMargin: 100,
         requireInStock: true,
@@ -152,14 +174,15 @@ export class CatalogSyncWorker {
 
       // 4. Publish top scored products to catalog
       const { publishedProducts, createdCount, updatedCount } =
-        CatalogDiscoveryEngine.publishEligibleCandidates(candidates, this.state.maxPublishLimit);
+        await CatalogDiscoveryEngine.publishEligibleCandidates(candidates, this.state.maxPublishLimit);
 
       const durationMs = Date.now() - startTime;
       this.state.status = 'COMPLETED';
       this.state.lastSyncAt = new Date().toISOString();
       this.state.productsFound = allRawProducts.length;
       this.state.eligibleCount = eligibleCandidates.length;
-      this.state.publishedCount = db.getProducts().filter((p) => p.supplierCode === 'DEODAP').length;
+      const liveProducts = await db.getProducts();
+      this.state.publishedCount = liveProducts.filter((p) => p.supplierCode === 'DEODAP').length;
       this.state.lastErrorMessage = undefined;
 
       // 5. Prepare sample candidates log
@@ -188,9 +211,9 @@ export class CatalogSyncWorker {
       };
 
       this.logs.unshift(logEntry);
-      this.persistState();
+      await this.persistState();
 
-      console.log(`[Catalog Sync Worker] Sync completed in ${durationMs}ms. Store now has ${db.getProducts().length} live products.`);
+      console.log(`[Catalog Sync Worker] Sync completed in ${durationMs}ms. Store now has ${liveProducts.length} live products.`);
 
       return {
         success: true,
@@ -220,7 +243,7 @@ export class CatalogSyncWorker {
         summary: `Sync failed: ${err.message}`,
       };
       this.logs.unshift(errorLog);
-      this.persistState();
+      await this.persistState();
 
       console.error('[Catalog Sync Worker] Sync failed:', err);
       throw err;

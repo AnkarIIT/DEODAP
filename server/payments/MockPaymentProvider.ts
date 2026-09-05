@@ -17,7 +17,7 @@ export class MockPaymentProvider implements PaymentProvider {
     const paymentId = `pay-mock-${Date.now()}`;
     const transactionRef = `TXN_MOCK_${Math.floor(100000 + Math.random() * 900000)}`;
 
-    db.addPayment(params.orderId, {
+    await db.addPayment(params.orderId, {
       id: paymentId,
       orderId: params.orderId,
       method: 'MOCK_GATEWAY',

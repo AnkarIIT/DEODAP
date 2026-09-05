@@ -1,4 +1,4 @@
-export type Role = 'CUSTOMER' | 'ADMIN';
+export type Role = 'CUSTOMER';
 
 export interface User {
   id: string;
@@ -71,10 +71,12 @@ export type OrderStatus =
   | 'PENDING_PAYMENT'
   | 'PAYMENT_REVIEW'
   | 'PAID'
+  | 'FULFILMENT_PENDING'
   | 'CONFIRMED'
   | 'SUPPLIER_SELECTION'
   | 'SUPPLIER_ORDER_PENDING'
   | 'SUPPLIER_ORDERED'
+  | 'SUPPLIER_ORDER_FAILED'
   | 'PROCESSING'
   | 'SHIPPED'
   | 'OUT_FOR_DELIVERY'

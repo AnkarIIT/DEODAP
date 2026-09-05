@@ -2,8 +2,8 @@ import React from 'react';
 import { Home, LayoutGrid, Tag, Package, User } from 'lucide-react';
 
 interface MobileBottomNavProps {
-  activeView: 'store' | 'orders' | 'wishlist' | 'admin' | 'account';
-  setActiveView: (view: 'store' | 'orders' | 'wishlist' | 'admin' | 'account') => void;
+  activeView: 'store' | 'orders' | 'wishlist' | 'account';
+  setActiveView: (view: 'store' | 'orders' | 'wishlist' | 'account') => void;
   onOpenCategories?: () => void;
   onOpenDeals?: () => void;
 }

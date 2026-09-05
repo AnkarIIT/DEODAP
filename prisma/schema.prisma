@@ -20,10 +20,12 @@ enum OrderStatus {
   PENDING_PAYMENT
   PAYMENT_REVIEW
   PAID
+  FULFILMENT_PENDING
   CONFIRMED
   SUPPLIER_SELECTION
   SUPPLIER_ORDER_PENDING
   SUPPLIER_ORDERED
+  SUPPLIER_ORDER_FAILED
   PROCESSING
   SHIPPED
   OUT_FOR_DELIVERY
@@ -101,19 +103,19 @@ model User {
 }
 
 model Address {
-  id         String   @id @default(uuid())
-  userId     String
-  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  fullName   String
-  phone      String
-  street     String
-  city       String
-  state      String
-  pincode    String
-  landmark   String?
-  isDefault  Boolean  @default(false)
-  createdAt  DateTime @default(now())
-  orders     Order[]
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  fullName  String
+  phone     String
+  street    String
+  city      String
+  state     String
+  pincode   String
+  landmark  String?
+  isDefault Boolean  @default(false)
+  createdAt DateTime @default(now())
+  orders    Order[]
 
   @@index([userId])
 }
@@ -140,22 +142,25 @@ model Product {
   slug             String            @unique
   description      String
   shortDesc        String?
+  vendor           String?
   categoryId       String
   category         Category          @relation(fields: [categoryId], references: [id])
-  mrp              Float             // Maximum Retail Price
-  sellingPrice     Float             // Customer price
-  images           String[]          // Array of image URLs
+  mrp              Float // Maximum Retail Price
+  sellingPrice     Float // Customer price
+  images           String[] // Array of image URLs
   thumbnail        String
-  badge            String?           // e.g. "Trending", "Best Seller", "50% Off"
+  badge            String? // e.g. "Trending", "Best Seller", "50% Off"
   rating           Float             @default(4.5)
   reviewCount      Int               @default(12)
   isTrending       Boolean           @default(false)
   isBestSeller     Boolean           @default(false)
   isNewArrival     Boolean           @default(false)
   isActive         Boolean           @default(true)
-  specifications   Json?             // Key-value pairs
+  specifications   Json? // Key-value pairs
   warrantyInfo     String?           @default("7-Day Replacement Guarantee")
   codAvailable     Boolean           @default(true)
+  qualityScore     Int? // Catalog discovery quality score (0-100)
+  metadata         Json? // Vendor-specific extras (supplierCode, syncTimestamp, marginAmount, custom fields)
   createdAt        DateTime          @default(now())
   updatedAt        DateTime          @updatedAt
   variants         ProductVariant[]
@@ -167,6 +172,7 @@ model Product {
 
   @@index([slug])
   @@index([categoryId])
+  @@index([isActive])
 }
 
 model ProductVariant {
@@ -176,7 +182,7 @@ model ProductVariant {
   sku        String      @unique
   title      String
   priceDiff  Float       @default(0)
-  attributes Json        // e.g. { "color": "Midnight Blue", "size": "Standard" }
+  attributes Json // e.g. { "color": "Midnight Blue", "size": "Standard" }
   stock      Int         @default(50)
   createdAt  DateTime    @default(now())
   orderItems OrderItem[]
@@ -185,43 +191,43 @@ model ProductVariant {
 }
 
 model Supplier {
-  id                  String            @id @default(uuid())
-  name                String            @unique
-  slug                String            @unique
-  code                String            @unique // e.g. "DEODAP", "MEESHO", "BHARAT_DIRECT"
-  status              SupplierStatus    @default(ACTIVE)
-  integrationType     IntegrationType   @default(MOCK_DEODAP)
-  contactEmail        String?
-  contactPhone        String?
-  reliabilityScore    Float             @default(94.5) // Percentage 0-100
-  avgDeliveryDays     Float             @default(3.5)
-  returnScore         Float             @default(92.0)
-  apiEndpoint         String?
-  apiKey              String?
-  notes               String?
-  createdAt           DateTime          @default(now())
-  updatedAt           DateTime          @updatedAt
-  supplierProducts    SupplierProduct[]
-  supplierOrders      SupplierOrder[]
-  inventory           Inventory[]
+  id               String            @id @default(uuid())
+  name             String            @unique
+  slug             String            @unique
+  code             String            @unique // e.g. "DEODAP", "MEESHO", "BHARAT_DIRECT"
+  status           SupplierStatus    @default(ACTIVE)
+  integrationType  IntegrationType   @default(MOCK_DEODAP)
+  contactEmail     String?
+  contactPhone     String?
+  reliabilityScore Float             @default(94.5) // Percentage 0-100
+  avgDeliveryDays  Float             @default(3.5)
+  returnScore      Float             @default(92.0)
+  apiEndpoint      String?
+  apiKey           String?
+  notes            String?
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  supplierProducts SupplierProduct[]
+  supplierOrders   SupplierOrder[]
+  inventory        Inventory[]
 
   @@index([code])
 }
 
 model SupplierProduct {
-  id                 String          @id @default(uuid())
-  supplierId         String
-  supplier           Supplier        @relation(fields: [supplierId], references: [id])
-  productId          String
-  product            Product         @relation(fields: [productId], references: [id], onDelete: Cascade)
-  externalProductId  String
-  costPrice          Float           // Wholesale cost from supplier
-  shippingCost       Float           @default(50) // Shipping charged by supplier
-  stock              Int             @default(100)
-  isAvailable        Boolean         @default(true)
-  leadTimeDays       Int             @default(3)
-  lastSyncedAt       DateTime        @default(now())
-  supplierOrders     SupplierOrder[]
+  id                String          @id @default(uuid())
+  supplierId        String
+  supplier          Supplier        @relation(fields: [supplierId], references: [id])
+  productId         String
+  product           Product         @relation(fields: [productId], references: [id], onDelete: Cascade)
+  externalProductId String
+  costPrice         Float // Wholesale cost from supplier
+  shippingCost      Float           @default(50) // Shipping charged by supplier
+  stock             Int             @default(100)
+  isAvailable       Boolean         @default(true)
+  leadTimeDays      Int             @default(3)
+  lastSyncedAt      DateTime        @default(now())
+  supplierOrders    SupplierOrder[]
 
   @@unique([supplierId, externalProductId])
   @@index([productId])
@@ -229,45 +235,45 @@ model SupplierProduct {
 }
 
 model Inventory {
-  id             String    @id @default(uuid())
+  id             String   @id @default(uuid())
   productId      String
-  product        Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
+  product        Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
   supplierId     String
-  supplier       Supplier  @relation(fields: [supplierId], references: [id])
-  totalStock     Int       @default(100)
-  reservedStock  Int       @default(0)
-  availableStock Int       @default(100)
-  lowStockAlert  Int       @default(15)
-  updatedAt      DateTime  @updatedAt
+  supplier       Supplier @relation(fields: [supplierId], references: [id])
+  totalStock     Int      @default(100)
+  reservedStock  Int      @default(0)
+  availableStock Int      @default(100)
+  lowStockAlert  Int      @default(15)
+  updatedAt      DateTime @updatedAt
 
   @@unique([productId, supplierId])
   @@index([productId])
 }
 
 model Order {
-  id                String           @id @default(uuid())
-  orderNumber       String           @unique // e.g. "BC-10042"
-  userId            String
-  user              User             @relation(fields: [userId], references: [id])
-  addressId         String
-  address           Address          @relation(fields: [addressId], references: [id])
-  status            OrderStatus      @default(PENDING_PAYMENT)
-  subtotal          Float
-  shippingFee       Float            @default(0)
-  discount          Float            @default(0)
-  couponCode        String?
-  totalAmount       Float
-  estimatedProfit   Float            @default(0) // Internal admin metric
-  paymentMethod     PaymentMethod    @default(UPI_MANUAL)
-  notes             String?
-  createdAt         DateTime         @default(now())
-  updatedAt         DateTime         @updatedAt
-  items             OrderItem[]
-  payments          Payment[]
-  shipments         Shipment[]
-  statusLogs        OrderStatusLog[]
-  supplierOrders    SupplierOrder[]
-  returnRequests    ReturnRequest[]
+  id              String           @id @default(uuid())
+  orderNumber     String           @unique // e.g. "BC-10042"
+  userId          String
+  user            User             @relation(fields: [userId], references: [id])
+  addressId       String
+  address         Address          @relation(fields: [addressId], references: [id])
+  status          OrderStatus      @default(PENDING_PAYMENT)
+  subtotal        Float
+  shippingFee     Float            @default(0)
+  discount        Float            @default(0)
+  couponCode      String?
+  totalAmount     Float
+  estimatedProfit Float            @default(0) // Internal admin metric
+  paymentMethod   PaymentMethod    @default(UPI_MANUAL)
+  notes           String?
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  items           OrderItem[]
+  payments        Payment[]
+  shipments       Shipment[]
+  statusLogs      OrderStatusLog[]
+  supplierOrders  SupplierOrder[]
+  returnRequests  ReturnRequest[]
 
   @@index([userId])
   @@index([orderNumber])
@@ -275,19 +281,20 @@ model Order {
 }
 
 model OrderItem {
-  id               String          @id @default(uuid())
-  orderId          String
-  order            Order           @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  productId        String
-  product          Product         @relation(fields: [productId], references: [id])
-  variantId        String?
-  variant          ProductVariant? @relation(fields: [variantId], references: [id])
-  quantity         Int             @default(1)
-  unitPrice        Float
-  totalPrice       Float
-  supplierCost     Float?          // Wholesale item cost from selected supplier
-  selectedSupplier String?
-  returnRequests   ReturnRequest[]
+  id                 String          @id @default(uuid())
+  orderId            String
+  order              Order           @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId          String
+  product            Product         @relation(fields: [productId], references: [id])
+  variantId          String?
+  variant            ProductVariant? @relation(fields: [variantId], references: [id])
+  quantity           Int             @default(1)
+  unitPrice          Float
+  totalPrice         Float
+  supplierCost       Float? // Wholesale item cost from selected supplier
+  selectedSupplier   String?
+  selectedSupplierId String?
+  returnRequests     ReturnRequest[]
 
   @@index([orderId])
   @@index([productId])
@@ -301,9 +308,9 @@ model Payment {
   status         PaymentStatus @default(PENDING)
   amount         Float
   currency       String        @default("INR")
-  transactionRef String?       // UPI UTR number or Gateway payment ID
+  transactionRef String? // UPI UTR number or Gateway payment ID
   upiPayerVpa    String?
-  verifiedBy     String?       // Admin user ID who approved manual payment
+  verifiedBy     String? // Admin user ID who approved manual payment
   verifiedAt     DateTime?
   notes          String?
   createdAt      DateTime      @default(now())
@@ -314,75 +321,77 @@ model Payment {
 }
 
 model Shipment {
-  id            String      @id @default(uuid())
-  orderId       String
-  order         Order       @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  carrier       String      @default("Delhivery Express") // e.g. Delhivery, BlueDart, Shadowfax
-  trackingNumber String      @unique
-  trackingUrl   String?
-  currentStatus String      @default("Shipment manifest created")
+  id                String    @id @default(uuid())
+  orderId           String
+  order             Order     @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  carrier           String    @default("Delhivery Express") // e.g. Delhivery, BlueDart, Shadowfax
+  trackingNumber    String    @unique
+  trackingUrl       String?
+  currentStatus     String    @default("Shipment manifest created")
   estimatedDelivery DateTime?
-  shippedAt     DateTime?
-  deliveredAt   DateTime?
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
+  shippedAt         DateTime?
+  deliveredAt       DateTime?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
 
   @@index([orderId])
 }
 
 model OrderStatusLog {
-  id        String      @id @default(uuid())
-  orderId   String
-  order     Order       @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  id         String       @id @default(uuid())
+  orderId    String
+  order      Order        @relation(fields: [orderId], references: [id], onDelete: Cascade)
   fromStatus OrderStatus?
-  toStatus  OrderStatus
-  note      String?
-  actorRole String      @default("SYSTEM") // SYSTEM, ADMIN, CUSTOMER, SUPPLIER
-  createdAt DateTime    @default(now())
+  toStatus   OrderStatus
+  note       String?
+  actorRole  String       @default("SYSTEM") // SYSTEM, ADMIN, CUSTOMER, SUPPLIER
+  createdAt  DateTime     @default(now())
 
   @@index([orderId])
 }
 
 model SupplierOrder {
-  id                 String              @id @default(uuid())
-  orderId            String
-  order              Order               @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  supplierId         String
-  supplier           Supplier            @relation(fields: [supplierId], references: [id])
-  supplierProductId  String?
-  supplierProduct    SupplierProduct?    @relation(fields: [supplierProductId], references: [id])
-  externalOrderId    String?             // Order ID returned by DeoDap/supplier
-  status             SupplierOrderStatus @default(PENDING)
-  wholesaleCost      Float
-  shippingCharged    Float
-  trackingNumber     String?
-  carrier            String?
-  errorMessage       String?
-  sentPayload        Json?
-  receivedResponse   Json?
-  createdAt          DateTime            @default(now())
-  updatedAt          DateTime            @updatedAt
+  id                String              @id @default(uuid())
+  orderId           String
+  order             Order               @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  supplierId        String
+  supplier          Supplier            @relation(fields: [supplierId], references: [id])
+  supplierProductId String?
+  supplierProduct   SupplierProduct?    @relation(fields: [supplierProductId], references: [id])
+  externalOrderId   String? // Order ID returned by DeoDap/supplier
+  status            SupplierOrderStatus @default(PENDING)
+  wholesaleCost     Float
+  shippingCharged   Float
+  trackingNumber    String?
+  carrier           String?
+  errorMessage      String?
+  sentPayload       Json?
+  receivedResponse  Json?
+  items             Json? // Fulfilment packet items (productId, productTitle, quantity, supplierCost)
+  notes             String?
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @updatedAt
 
   @@index([orderId])
   @@index([supplierId])
 }
 
 model ReturnRequest {
-  id          String       @id @default(uuid())
-  orderId     String
-  order       Order        @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  orderItemId String
-  orderItem   OrderItem    @relation(fields: [orderItemId], references: [id])
-  userId      String
-  user        User         @relation(fields: [userId], references: [id])
-  reason      String
-  description String?
-  imageUrl    String?
-  status      ReturnStatus @default(REQUESTED)
-  adminNote   String?
+  id           String       @id @default(uuid())
+  orderId      String
+  order        Order        @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  orderItemId  String
+  orderItem    OrderItem    @relation(fields: [orderItemId], references: [id])
+  userId       String
+  user         User         @relation(fields: [userId], references: [id])
+  reason       String
+  description  String?
+  imageUrl     String?
+  status       ReturnStatus @default(REQUESTED)
+  adminNote    String?
   refundAmount Float?
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
 
   @@index([orderId])
   @@index([userId])
@@ -416,16 +425,16 @@ model Wishlist {
 }
 
 model Review {
-  id        String   @id @default(uuid())
-  productId String
-  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  rating    Int      @default(5)
-  title     String
-  comment   String
-  verifiedPurchase Boolean @default(true)
-  createdAt DateTime @default(now())
+  id               String   @id @default(uuid())
+  productId        String
+  product          Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  userId           String
+  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  rating           Int      @default(5)
+  title            String
+  comment          String
+  verifiedPurchase Boolean  @default(true)
+  createdAt        DateTime @default(now())
 
   @@index([productId])
 }
@@ -449,7 +458,7 @@ model ImportRow {
   job         ImportJob @relation(fields: [jobId], references: [id], onDelete: Cascade)
   rowNumber   Int
   rawTitle    String
-  status      String    // "SUCCESS" or "FAILED"
+  status      String // "SUCCESS" or "FAILED"
   errorReason String?
   createdAt   DateTime  @default(now())
 

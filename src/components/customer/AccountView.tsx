@@ -4,11 +4,11 @@ import { useAuth } from '../../context/AuthContext';
 import { BRAND_CONFIG } from '../../config/brand';
 
 interface AccountViewProps {
-  onNavigate: (view: 'store' | 'orders' | 'wishlist' | 'admin') => void;
+  onNavigate: (view: 'store' | 'orders' | 'wishlist' | 'account') => void;
 }
 
 export const AccountView: React.FC<AccountViewProps> = ({ onNavigate }) => {
-  const { user, isAdmin, switchRole } = useAuth();
+  const { user } = useAuth();
 
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-8 py-8 space-y-6">
@@ -37,7 +37,7 @@ export const AccountView: React.FC<AccountViewProps> = ({ onNavigate }) => {
 
           <div className="flex items-center gap-2">
             <span className="px-3 py-1 bg-[#FFF1EE] text-[#FF5A36] text-xs font-bold rounded-full">
-              {user?.role === 'ADMIN' ? 'Admin Manager' : 'Verified Buyer'}
+              Verified Buyer
             </span>
           </div>
         </div>
@@ -99,42 +99,21 @@ export const AccountView: React.FC<AccountViewProps> = ({ onNavigate }) => {
         </div>
       </div>
 
-      {/* Role Switcher & System Info */}
+      {/* Storefront Navigation */}
       <div className="bg-[#FAFAF8] rounded-3xl border border-[#E8E8E5] p-6 space-y-4">
         <div className="flex items-center gap-2">
           <ShieldCheck className="w-4 h-4 text-[#111111]" />
-          <h3 className="font-bold text-sm text-[#111111]">Developer & Role Switcher</h3>
+          <h3 className="font-bold text-sm text-[#111111]">Storefront</h3>
         </div>
         <p className="text-xs text-[#6B6B6B]">
-          Switch between customer shopping mode and the admin operational fulfillment dashboard.
+          Jump back to the customer storefront to continue shopping.
         </p>
         <div className="flex flex-wrap items-center gap-3">
           <button
-            onClick={() => {
-              if (user?.role !== 'CUSTOMER') switchRole('CUSTOMER');
-              onNavigate('store');
-            }}
-            className={`h-10 px-5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-              user?.role === 'CUSTOMER'
-                ? 'bg-[#111111] text-white shadow-xs'
-                : 'bg-white border border-[#E8E8E5] text-[#111111] hover:bg-neutral-100'
-            }`}
+            onClick={() => onNavigate('store')}
+            className="h-10 px-5 rounded-xl text-xs font-bold transition-all cursor-pointer bg-[#111111] text-white shadow-xs"
           >
-            Customer Store Mode
-          </button>
-          <button
-            onClick={() => {
-              if (user?.role !== 'ADMIN') switchRole('ADMIN');
-              onNavigate('admin');
-            }}
-            className={`h-10 px-5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
-              user?.role === 'ADMIN'
-                ? 'bg-[#FF5A36] text-white shadow-xs'
-                : 'bg-white border border-[#E8E8E5] text-[#111111] hover:bg-neutral-100'
-            }`}
-          >
-            <ShieldCheck className="w-3.5 h-3.5" />
-            Admin Operations Panel
+            Browse Storefront
           </button>
         </div>
       </div>

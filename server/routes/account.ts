@@ -6,20 +6,20 @@ import { PricingEngine } from '../pricing/PricingEngine';
 const router = Router();
 
 // GET /api/account/addresses
-router.get('/addresses', requireAuth, (req: AuthRequest, res) => {
-  const addresses = db.getAddresses(req.user!.id);
+router.get('/addresses', requireAuth, async (req: AuthRequest, res) => {
+  const addresses = await db.getAddresses(req.user!.id);
   res.json({ addresses });
 });
 
 // POST /api/account/addresses
-router.post('/addresses', requireAuth, (req: AuthRequest, res) => {
+router.post('/addresses', requireAuth, async (req: AuthRequest, res) => {
   try {
     const { fullName, phone, street, city, state, pincode, landmark, isDefault } = req.body;
     if (!fullName || !phone || !street || !pincode) {
       return res.status(400).json({ error: 'Please provide full name, phone, street, and PIN code.' });
     }
 
-    const newAddress = db.createAddress({
+    const newAddress = await db.createAddress({
       id: `addr-${Date.now()}`,
       userId: req.user!.id,
       fullName: fullName.trim(),
@@ -40,14 +40,14 @@ router.post('/addresses', requireAuth, (req: AuthRequest, res) => {
 });
 
 // Reviews
-router.post('/reviews', requireAuth, (req: AuthRequest, res) => {
+router.post('/reviews', requireAuth, async (req: AuthRequest, res) => {
   try {
     const { productId, rating, comment } = req.body;
     if (!productId || !rating || !comment) {
       return res.status(400).json({ error: 'Product ID, rating (1-5), and review text are required.' });
     }
 
-    const review = db.addReview({
+    const review = await db.addReview({
       id: `rev-${Date.now()}`,
       productId,
       userId: req.user!.id,

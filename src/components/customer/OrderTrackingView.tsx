@@ -90,9 +90,9 @@ export const OrderTrackingView: React.FC<OrderTrackingViewProps> = ({
 
   // Customer-facing milestones stepper:
   const STEPS: Array<{ key: string; label: string; statuses: OrderStatus[] }> = [
-    { key: 'placed', label: 'Order Placed', statuses: ['PENDING_PAYMENT', 'PAYMENT_REVIEW', 'PAID', 'CONFIRMED', 'SUPPLIER_SELECTION', 'SUPPLIER_ORDER_PENDING', 'SUPPLIER_ORDERED', 'PROCESSING', 'SHIPPED', 'OUT_FOR_DELIVERY', 'DELIVERED'] },
-    { key: 'verified', label: 'Payment Verified', statuses: ['PAID', 'CONFIRMED', 'SUPPLIER_SELECTION', 'SUPPLIER_ORDER_PENDING', 'SUPPLIER_ORDERED', 'PROCESSING', 'SHIPPED', 'OUT_FOR_DELIVERY', 'DELIVERED'] },
-    { key: 'processing', label: 'Dispatched Hub', statuses: ['SUPPLIER_ORDERED', 'PROCESSING', 'SHIPPED', 'OUT_FOR_DELIVERY', 'DELIVERED'] },
+    { key: 'placed', label: 'Order Placed', statuses: ['PENDING_PAYMENT', 'PAYMENT_REVIEW', 'PAID', 'FULFILMENT_PENDING', 'CONFIRMED', 'SUPPLIER_SELECTION', 'SUPPLIER_ORDER_PENDING', 'SUPPLIER_ORDERED', 'SUPPLIER_ORDER_FAILED', 'PROCESSING', 'SHIPPED', 'OUT_FOR_DELIVERY', 'DELIVERED'] },
+    { key: 'verified', label: 'Payment Verified', statuses: ['PAID', 'FULFILMENT_PENDING', 'CONFIRMED', 'SUPPLIER_SELECTION', 'SUPPLIER_ORDER_PENDING', 'SUPPLIER_ORDERED', 'SUPPLIER_ORDER_FAILED', 'PROCESSING', 'SHIPPED', 'OUT_FOR_DELIVERY', 'DELIVERED'] },
+    { key: 'processing', label: 'Dispatched Hub', statuses: ['FULFILMENT_PENDING', 'SUPPLIER_ORDERED', 'SUPPLIER_ORDER_FAILED', 'PROCESSING', 'SHIPPED', 'OUT_FOR_DELIVERY', 'DELIVERED'] },
     { key: 'shipped', label: 'In Transit', statuses: ['SHIPPED', 'OUT_FOR_DELIVERY', 'DELIVERED'] },
     { key: 'delivered', label: 'Delivered', statuses: ['DELIVERED'] },
   ];
@@ -100,7 +100,7 @@ export const OrderTrackingView: React.FC<OrderTrackingViewProps> = ({
   const currentStepIndex = STEPS.findIndex((s) => s.statuses.includes(order.status));
   const isCancelled = order.status === 'CANCELLED';
   const isReturnRequested = ['RETURN_REQUESTED', 'RETURN_APPROVED', 'RETURNED', 'REFUNDED'].includes(order.status);
-  const isCancellable = ['PENDING_PAYMENT', 'PAYMENT_REVIEW', 'PAID', 'CONFIRMED', 'SUPPLIER_SELECTION'].includes(order.status);
+  const isCancellable = ['PENDING_PAYMENT', 'PAYMENT_REVIEW', 'PAID', 'FULFILMENT_PENDING', 'CONFIRMED', 'SUPPLIER_SELECTION'].includes(order.status);
 
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-8 py-8 space-y-6">

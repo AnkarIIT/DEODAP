@@ -5,7 +5,7 @@ import { PricingEngine } from '../pricing/PricingEngine';
 const router = Router();
 
 // Calculate cart totals securely from database
-router.post('/calculate', (req, res) => {
+router.post('/calculate', async (req, res) => {
   try {
     const { items, couponCode, paymentMethod } = req.body;
     if (!items || !Array.isArray(items) || items.length === 0) {
@@ -19,7 +19,7 @@ router.post('/calculate', (req, res) => {
       });
     }
 
-    const calculated = PricingEngine.calculateOrderTotals(items, couponCode, paymentMethod);
+    const calculated = await PricingEngine.calculateOrderTotals(items, couponCode, paymentMethod);
 
     // Strip internal wholesale cost before sending to customer
     const clientItems = calculated.items.map((item) => ({
@@ -45,14 +45,14 @@ router.post('/calculate', (req, res) => {
 });
 
 // Validate coupon code
-router.post('/apply-coupon', (req, res) => {
+router.post('/apply-coupon', async (req, res) => {
   try {
     const { code, subtotal } = req.body;
     if (!code) {
       return res.status(400).json({ error: 'Please provide a coupon code.' });
     }
 
-    const coupon = db.findCoupon(code);
+    const coupon = await db.findCoupon(code);
     if (!coupon) {
       return res.status(404).json({ error: 'Invalid or expired coupon code.' });
     }

@@ -4,7 +4,7 @@ import { BRAND_CONFIG } from '../../config/brand';
 
 interface FooterProps {
   onSelectCategory?: (slug: string) => void;
-  onNavigate?: (view: 'store' | 'orders' | 'wishlist' | 'admin' | 'account') => void;
+  onNavigate?: (view: 'store' | 'orders' | 'wishlist' | 'account') => void;
 }
 
 export const Footer: React.FC<FooterProps> = ({ onSelectCategory, onNavigate }) => {

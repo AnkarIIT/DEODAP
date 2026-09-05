@@ -49,6 +49,16 @@
       "createdAt": "2026-08-26T06:43:28.290Z",
       "updatedAt": "2026-09-05T06:43:28.290Z",
       "passwordHash": "$2b$08$oOyWsBQBem21.lICnsJXXekBCZHqxMmSENQZ5fSBFpZYugf90yLwy"
+    },
+    {
+      "id": "usr-1788600815563",
+      "name": "Smoke User",
+      "email": "smokeok@example.com",
+      "phone": "9876543210",
+      "passwordHash": "$2b$10$Ve/ZYjCZk2YE8PKtFPN3COxj9Z/jVmRKmdGpu6/QzGc0zit5aFvSG",
+      "role": "CUSTOMER",
+      "createdAt": "2026-09-05T09:33:35.564Z",
+      "updatedAt": "2026-09-05T09:33:35.564Z"
     }
   ],
   "orders": [
@@ -1163,7 +1173,8 @@
         "Battery": "1200mAh USB Rechargeable",
         "Capacity": "200ml Feeding Cup",
         "Blade Material": "Food Grade Stainless Steel 304"
-      }
+      },
+      "categorySlug": "kitchen-dining"
     },
     {
       "id": "prod-02",
@@ -1194,7 +1205,8 @@
         "Volume": "200ml",
         "Material": "Lead-free Borosilicate Glass & BPA-free Nozzle",
         "Spray Type": "Ultrafine Horizontal Mist"
-      }
+      },
+      "categorySlug": "kitchen-dining"
     },
     {
       "id": "prod-03",
@@ -1225,7 +1237,8 @@
         "Pipe": "Food-grade Silicone 55cm",
         "Battery": "1200mAh Li-ion",
         "Certification": "RoHS & CE Certified"
-      }
+      },
+      "categorySlug": "kitchen-dining"
     },
     {
       "id": "prod-04",
@@ -1256,7 +1269,8 @@
         "Pieces": "6 Sizes (6.5cm to 21cm)",
         "BPA Free": "100% Platinum Food Grade Silicone",
         "Temperature Range": "-40°C to 230°C"
-      }
+      },
+      "categorySlug": "kitchen-dining"
     },
     {
       "id": "prod-05",
@@ -1286,7 +1300,8 @@
       "specifications": {
         "Body": "ABS Plastic + SUS 304 Stainless Steel",
         "Anti-slip Base": "Rubber Grippers Included"
-      }
+      },
+      "categorySlug": "kitchen-dining"
     },
     {
       "id": "prod-06",
@@ -1318,7 +1333,8 @@
         "Lens": "Optical Crystal Glass",
         "Power": "USB 5V/2A Cable with switch",
         "Remote": "24-Key IR Controller"
-      }
+      },
+      "categorySlug": "smart-gadgets"
     },
     {
       "id": "prod-07",
@@ -1349,7 +1365,8 @@
         "RPM": "22,000 RPM",
         "Battery": "2000mAh Lithium Rechargeable",
         "Capacity": "380ml Tritan Cup"
-      }
+      },
+      "categorySlug": "smart-gadgets"
     },
     {
       "id": "prod-08",
@@ -1380,7 +1397,8 @@
         "Modes": "8 Nebula Effects + Twinkling Stars",
         "Control Distance": "5m IR Remote",
         "Laser Wavelength": "532nm"
-      }
+      },
+      "categorySlug": "smart-gadgets"
     },
     {
       "id": "prod-09",
@@ -1411,7 +1429,8 @@
         "Port": "Type-C QuickCharge 3.0",
         "Output": "15W / 10W / 7.5W / 5W",
         "Protection": "Foreign Object & Overheat Sensors"
-      }
+      },
+      "categorySlug": "smart-gadgets"
     },
     {
       "id": "prod-10",
@@ -1442,7 +1461,8 @@
         "Motor": "Brushless 130,000 RPM",
         "Battery": "3000mAh Dual 18650 cells",
         "Wind Speed": "52 m/s Max"
-      }
+      },
+      "categorySlug": "smart-gadgets"
     },
     {
       "id": "prod-11",
@@ -1473,7 +1493,8 @@
         "Noise": "< 25dB Silent Run",
         "Safety": "Auto Power-Off Sensor",
         "Mist Output": "20-30ml/hr"
-      }
+      },
+      "categorySlug": "home-living"
     },
     {
       "id": "prod-12",
@@ -1504,7 +1525,8 @@
         "Modes": "Always On / Night Sensor Mode",
         "Sensor Angle": "120° Wide Cone",
         "Detection Distance": "3-5 Meters"
-      }
+      },
+      "categorySlug": "home-living"
     },
     {
       "id": "prod-13",
@@ -1535,7 +1557,8 @@
         "Fabric": "Natural Cotton Linen Blend",
         "Capacity": "75 Liters",
         "Dimensions": "40 x 30 x 60 cm"
-      }
+      },
+      "categorySlug": "home-living"
     },
     {
       "id": "prod-14",
@@ -1565,7 +1588,8 @@
       "specifications": {
         "Base": "Natural Solid Beechwood with LED Strip",
         "Board": "5mm Cast Scratch-resistant Acrylic"
-      }
+      },
+      "categorySlug": "home-living"
     },
     {
       "id": "prod-15",
@@ -1596,7 +1620,8 @@
         "Width": "30mm",
         "Thickness": "2.0mm",
         "Weight Capacity": "Holds up to 1kg on smooth tiles/walls"
-      }
+      },
+      "categorySlug": "home-living"
     },
     {
       "id": "prod-16",
@@ -1626,7 +1651,8 @@
       "specifications": {
         "Capacity": "150ml Liquid",
         "Material": "Food-Grade BPA-Free Silicone"
-      }
+      },
+      "categorySlug": "beauty-grooming"
     },
     {
       "id": "prod-17",
@@ -1657,7 +1683,8 @@
         "Cord": "360° Swivel 2-Meter Cable",
         "Power": "1000W High Speed Aerodynamic Motor",
         "Heat Settings": "3 Temperature Controls"
-      }
+      },
+      "categorySlug": "beauty-grooming"
     },
     {
       "id": "prod-18",
@@ -1687,7 +1714,8 @@
       "specifications": {
         "Spatula Blade": "100% Medical Stainless Steel",
         "Vibration Frequency": "24,000 Hz Ultrasonic Waves"
-      }
+      },
+      "categorySlug": "beauty-grooming"
     },
     {
       "id": "prod-19",
@@ -1717,7 +1745,8 @@
       "specifications": {
         "Blade": "Titanium Stainless Steel Zero-Cut",
         "Battery": "1200mAh Lithium-ion (120 mins run)"
-      }
+      },
+      "categorySlug": "beauty-grooming"
     },
     {
       "id": "prod-20",
@@ -1747,7 +1776,8 @@
       "specifications": {
         "Levels": "65°C & 85°C Modes",
         "Heating Pad": "Sensing Temperature Color-change Silicone"
-      }
+      },
+      "categorySlug": "beauty-grooming"
     },
     {
       "id": "prod-21",
@@ -1778,7 +1808,8 @@
         "Material": "Magnesium Aluminium Alloy",
         "Clamp Width": "Up to 7.5cm surfaces",
         "Compatibility": "All 4.5\" - 11\" Devices"
-      }
+      },
+      "categorySlug": "mobile-accessories"
     },
     {
       "id": "prod-22",
@@ -1809,7 +1840,8 @@
         "Capacity": "3 Debit/Credit Cards or ID",
         "Material": "Premium Vegan PU Leather",
         "Magnet Strength": "3800 Gauss N52 Magnets"
-      }
+      },
+      "categorySlug": "mobile-accessories"
     },
     {
       "id": "prod-23",
@@ -1840,7 +1872,8 @@
         "Length": "1.2 Meters",
         "Output": "3.0A Max Speed",
         "Connectors": "USB-A to Type-C + Lightning + Micro USB"
-      }
+      },
+      "categorySlug": "mobile-accessories"
     },
     {
       "id": "prod-24",
@@ -1870,7 +1903,8 @@
       "specifications": {
         "Battery": "1200mAh (6-8 hours shooting)",
         "AI Camera": "Ultra-fast 30fps Realtime Tracking"
-      }
+      },
+      "categorySlug": "mobile-accessories"
     },
     {
       "id": "prod-25",
@@ -1900,7 +1934,8 @@
       "specifications": {
         "Material": "100% Malaysian Natural Elastic Latex",
         "Tension Bands": "10, 20, 30, 40, 50 lbs"
-      }
+      },
+      "categorySlug": "fitness-sports"
     },
     {
       "id": "prod-26",
@@ -1931,7 +1966,8 @@
         "Battery": "1200mAh USB-C",
         "Material": "BPA-Free Infant Grade Tritan",
         "Motor Speed": "7,000 RPM Vortex Whirlwind"
-      }
+      },
+      "categorySlug": "fitness-sports"
     },
     {
       "id": "prod-27",
@@ -1961,7 +1997,8 @@
       "specifications": {
         "Grip": "Ergonomic TPR Non-slip Handle",
         "Resistance Range": "10kg to 100kg Dial Spring"
-      }
+      },
+      "categorySlug": "fitness-sports"
     },
     {
       "id": "prod-28",
@@ -1992,7 +2029,8 @@
         "Cover": "100% Breathable Linen",
         "Inner": "High Density Eco Foam",
         "Spikes": "Over 8,000 Precision Pressure Points"
-      }
+      },
+      "categorySlug": "fitness-sports"
     },
     {
       "id": "prod-29",
@@ -2022,7 +2060,8 @@
       "specifications": {
         "Power": "Monocrystalline Solar Panel",
         "Material": "High Strength Electroplated Alloy"
-      }
+      },
+      "categorySlug": "car-bike"
     },
     {
       "id": "prod-30",
@@ -2052,7 +2091,8 @@
       "specifications": {
         "Material": "Pure Solid Brass",
         "Connector": "Standard 1/2 Inch Quick Hose Coupling"
-      }
+      },
+      "categorySlug": "car-bike"
     },
     {
       "id": "prod-31",
@@ -2082,7 +2122,8 @@
       "specifications": {
         "Ports": "Dual 5V/2.4A USB Ports",
         "Material": "Microfiber Leather + ABS"
-      }
+      },
+      "categorySlug": "car-bike"
     },
     {
       "id": "prod-32",
@@ -2113,7 +2154,8 @@
         "Base": "316L Surgical Stainless Steel",
         "Length": "40cm + 5cm Extension",
         "Plating": "18K PVD Gold Electroplating"
-      }
+      },
+      "categorySlug": "fashion-jewelry"
     },
     {
       "id": "prod-33",
@@ -2143,7 +2185,8 @@
       "specifications": {
         "Capacity": "5-6 Credit Cards + Cash Notes",
         "Protection": "13.56 MHz RFID/NFC Blocking"
-      }
+      },
+      "categorySlug": "fashion-jewelry"
     },
     {
       "id": "prod-34",
@@ -2173,7 +2216,8 @@
       "specifications": {
         "Lens": "TAC Triacetate Polarized UV400",
         "Frame": "Corrosion-resistant Nickel Silver Alloy"
-      }
+      },
+      "categorySlug": "fashion-jewelry"
     },
     {
       "id": "prod-35",
@@ -2203,7 +2247,8 @@
       "specifications": {
         "Battery": "CR2025 Replaceable Coin Cell (1 Year life)",
         "Screen Size": "8.5 Inch Flexible LCD"
-      }
+      },
+      "categorySlug": "kids-toys"
     },
     {
       "id": "prod-36",
@@ -2233,7 +2278,8 @@
       "specifications": {
         "Battery": "1200mAh USB-C",
         "Material": "Food-Grade Squishy Silicone"
-      }
+      },
+      "categorySlug": "kids-toys"
     },
     {
       "id": "prod-37",
@@ -2263,7 +2309,8 @@
       "specifications": {
         "Pieces": "40 Assorted Geometric Shapes",
         "Safety": "Non-toxic BPA Free Round Edges"
-      }
+      },
+      "categorySlug": "kids-toys"
     },
     {
       "id": "prod-38",
@@ -2293,7 +2340,8 @@
       "specifications": {
         "Size": "80cm x 40cm x 2mm",
         "Material": "Eco Friendly PU Leather"
-      }
+      },
+      "categorySlug": "office-stationery"
     },
     {
       "id": "prod-39",
@@ -2323,7 +2371,8 @@
       "specifications": {
         "Compatibility": "All 10\" to 15.6\" MacBooks & PCs",
         "Weight Capacity": "Supports up to 20kg"
-      }
+      },
+      "categorySlug": "office-stationery"
     },
     {
       "id": "prod-40",
@@ -2353,7 +2402,8 @@
       "specifications": {
         "Base": "Traceless 3M Acrylic Adhesive Bar",
         "Beads": "Strong Neodymium Magnetic Buckles"
-      }
+      },
+      "categorySlug": "office-stationery"
     },
     {
       "id": "prod-41",
@@ -2383,7 +2433,8 @@
       "specifications": {
         "Capacity": "500ml",
         "Insulation": "Double Wall SUS304 Stainless Steel"
-      }
+      },
+      "categorySlug": "kitchen-dining"
     },
     {
       "id": "prod-42",
@@ -2413,7 +2464,8 @@
       "specifications": {
         "Heads": "Nylon Brush + Sponge Pad + Cashmere Polisher",
         "Motor Speed": "350 RPM Powerful Torque"
-      }
+      },
+      "categorySlug": "home-living"
     },
     {
       "id": "prod-43",
@@ -2443,7 +2495,8 @@
       "specifications": {
         "Battery": "2x AA Battery Powered",
         "Heating": "Rapid Micro Thermal Strip"
-      }
+      },
+      "categorySlug": "kitchen-dining"
     },
     {
       "id": "prod-44",
@@ -2473,7 +2526,8 @@
       "specifications": {
         "Modes": "Warm Yellow, Cool White, Neutral Glow",
         "Levitation Height": "15mm Air Gap"
-      }
+      },
+      "categorySlug": "home-living"
     },
     {
       "id": "prod-45",
@@ -2503,7 +2557,8 @@
       "specifications": {
         "Buzzer": "90dB High Pitch Beeper",
         "Battery": "CR2032 (10-12 months standby)"
-      }
+      },
+      "categorySlug": "smart-gadgets"
     },
     {
       "id": "prod-46",
@@ -2533,7 +2588,8 @@
       "specifications": {
         "Material": "100% Food Grade Polypropylene (BPA Free)",
         "Dishwasher": "Top Rack Safe"
-      }
+      },
+      "categorySlug": "kids-toys"
     },
     {
       "id": "prod-47",
@@ -2563,7 +2619,8 @@
       "specifications": {
         "Battery": "Rechargeable Li-ion 1200mAh",
         "Sensor Speed": "0.25 Seconds Infrared Sensing"
-      }
+      },
+      "categorySlug": "kitchen-dining"
     },
     {
       "id": "prod-48",
@@ -2593,7 +2650,8 @@
       "specifications": {
         "Tip": "18K Hypoallergenic Gold Plated Head",
         "Power": "USB Rechargeable"
-      }
+      },
+      "categorySlug": "beauty-grooming"
     },
     {
       "id": "prod-49",
@@ -2623,7 +2681,8 @@
       "specifications": {
         "Size": "Universal 140cm x 79cm",
         "Coating": "Titanium Silver UPF 50+"
-      }
+      },
+      "categorySlug": "car-bike"
     },
     {
       "id": "prod-50",
@@ -2653,7 +2712,8 @@
       "specifications": {
         "Wood": "Solid Walnut Finish Hardwood",
         "Assembly": "Tool-free interlocking pieces"
-      }
+      },
+      "categorySlug": "office-stationery"
     },
     {
       "id": "prod-51",
@@ -2683,7 +2743,8 @@
       "specifications": {
         "Battery": "1000mAh (8 hours playtime)",
         "Water Resistance": "IPX7 Submersible 1 Meter"
-      }
+      },
+      "categorySlug": "smart-gadgets"
     },
     {
       "id": "prod-52",
@@ -2713,7 +2774,8 @@
       "specifications": {
         "Drainage": "One-click Bottom Water Stopper",
         "Material": "Food Grade PP + TPR Silicone"
-      }
+      },
+      "categorySlug": "kitchen-dining"
     },
     {
       "id": "prod-dd-10830865662262",
@@ -2754,7 +2816,8 @@
       "inventoryCount": 50,
       "syncTimestamp": "2026-09-05T08:08:49.745Z",
       "createdAt": "2026-09-05T08:08:49.745Z",
-      "updatedAt": "2026-09-05T08:08:49.745Z"
+      "updatedAt": "2026-09-05T08:08:49.745Z",
+      "categorySlug": "kitchen-dining"
     },
     {
       "id": "prod-dd-10830865531190",
@@ -2795,7 +2858,8 @@
       "inventoryCount": 50,
       "syncTimestamp": "2026-09-05T08:08:49.749Z",
       "createdAt": "2026-09-05T08:08:49.749Z",
-      "updatedAt": "2026-09-05T08:08:49.749Z"
+      "updatedAt": "2026-09-05T08:08:49.749Z",
+      "categorySlug": "kitchen-dining"
     },
     {
       "id": "prod-dd-10830865465654",
@@ -2836,7 +2900,8 @@
       "inventoryCount": 50,
       "syncTimestamp": "2026-09-05T08:08:49.752Z",
       "createdAt": "2026-09-05T08:08:49.752Z",
-      "updatedAt": "2026-09-05T08:08:49.752Z"
+      "updatedAt": "2026-09-05T08:08:49.752Z",
+      "categorySlug": "kitchen-dining"
     },
     {
       "id": "prod-dd-10830865301814",
@@ -2878,7 +2943,8 @@
       "inventoryCount": 50,
       "syncTimestamp": "2026-09-05T08:08:49.755Z",
       "createdAt": "2026-09-05T08:08:49.755Z",
-      "updatedAt": "2026-09-05T08:08:49.755Z"
+      "updatedAt": "2026-09-05T08:08:49.755Z",
+      "categorySlug": "kitchen-dining"
     },
     {
       "id": "prod-dd-10830866088246",
@@ -2919,7 +2985,8 @@
       "inventoryCount": 50,
       "syncTimestamp": "2026-09-05T08:08:49.758Z",
       "createdAt": "2026-09-05T08:08:49.758Z",
-      "updatedAt": "2026-09-05T08:08:49.758Z"
+      "updatedAt": "2026-09-05T08:08:49.758Z",
+      "categorySlug": "smart-gadgets"
     },
     {
       "id": "prod-dd-10830865924406",
@@ -2960,7 +3027,8 @@
       "inventoryCount": 50,
       "syncTimestamp": "2026-09-05T08:08:49.762Z",
       "createdAt": "2026-09-05T08:08:49.762Z",
-      "updatedAt": "2026-09-05T08:08:49.762Z"
+      "updatedAt": "2026-09-05T08:08:49.762Z",
+      "categorySlug": "kitchen-dining"
     },
     {
       "id": "prod-dd-10830866710838",
@@ -3003,7 +3071,8 @@
       "inventoryCount": 50,
       "syncTimestamp": "2026-09-05T08:08:49.770Z",
       "createdAt": "2026-09-05T08:08:49.770Z",
-      "updatedAt": "2026-09-05T08:08:49.770Z"
+      "updatedAt": "2026-09-05T08:08:49.770Z",
+      "categorySlug": "smart-gadgets"
     },
     {
       "id": "prod-dd-10830866645302",
@@ -3044,7 +3113,8 @@
       "inventoryCount": 50,
       "syncTimestamp": "2026-09-05T08:08:49.774Z",
       "createdAt": "2026-09-05T08:08:49.774Z",
-      "updatedAt": "2026-09-05T08:08:49.774Z"
+      "updatedAt": "2026-09-05T08:08:49.774Z",
+      "categorySlug": "home-living"
     },
     {
       "id": "prod-dd-10830866514230",
@@ -3086,7 +3156,8 @@
       "inventoryCount": 50,
       "syncTimestamp": "2026-09-05T08:08:49.777Z",
       "createdAt": "2026-09-05T08:08:49.777Z",
-      "updatedAt": "2026-09-05T08:08:49.777Z"
+      "updatedAt": "2026-09-05T08:08:49.777Z",
+      "categorySlug": "home-living"
     },
     {
       "id": "prod-dd-10830866186550",
@@ -3127,7 +3198,8 @@
       "inventoryCount": 50,
       "syncTimestamp": "2026-09-05T08:08:49.784Z",
       "createdAt": "2026-09-05T08:08:49.784Z",
-      "updatedAt": "2026-09-05T08:08:49.784Z"
+      "updatedAt": "2026-09-05T08:08:49.784Z",
+      "categorySlug": "kitchen-dining"
     },
     {
       "id": "prod-dd-10830864056630",
@@ -3168,7 +3240,8 @@
       "inventoryCount": 50,
       "syncTimestamp": "2026-09-05T08:08:49.790Z",
       "createdAt": "2026-09-05T08:08:49.790Z",
-      "updatedAt": "2026-09-05T08:08:49.790Z"
+      "updatedAt": "2026-09-05T08:08:49.790Z",
+      "categorySlug": "kitchen-dining"
     },
     {
       "id": "prod-dd-10830863827254",
@@ -3209,7 +3282,8 @@
       "inventoryCount": 50,
       "syncTimestamp": "2026-09-05T08:08:49.796Z",
       "createdAt": "2026-09-05T08:08:49.796Z",
-      "updatedAt": "2026-09-05T08:08:49.796Z"
+      "updatedAt": "2026-09-05T08:08:49.796Z",
+      "categorySlug": "kitchen-dining"
     },
     {
       "id": "prod-dd-10830863794486",
@@ -3250,7 +3324,8 @@
       "inventoryCount": 50,
       "syncTimestamp": "2026-09-05T08:08:49.803Z",
       "createdAt": "2026-09-05T08:08:49.803Z",
-      "updatedAt": "2026-09-05T08:08:49.803Z"
+      "updatedAt": "2026-09-05T08:08:49.803Z",
+      "categorySlug": "kitchen-dining"
     },
     {
       "id": "prod-dd-10830864351542",
@@ -3294,7 +3369,8 @@
       "inventoryCount": 50,
       "syncTimestamp": "2026-09-05T08:08:49.810Z",
       "createdAt": "2026-09-05T08:08:49.810Z",
-      "updatedAt": "2026-09-05T08:08:49.810Z"
+      "updatedAt": "2026-09-05T08:08:49.810Z",
+      "categorySlug": "kitchen-dining"
     },
     {
       "id": "prod-dd-10830864286006",
@@ -3336,7 +3412,8 @@
       "inventoryCount": 50,
       "syncTimestamp": "2026-09-05T08:08:49.816Z",
       "createdAt": "2026-09-05T08:08:49.816Z",
-      "updatedAt": "2026-09-05T08:08:49.816Z"
+      "updatedAt": "2026-09-05T08:08:49.816Z",
+      "categorySlug": "home-living"
     },
     {
       "id": "prod-dd-10830864154934",
@@ -3376,7 +3453,8 @@
       "inventoryCount": 50,
       "syncTimestamp": "2026-09-05T08:08:49.823Z",
       "createdAt": "2026-09-05T08:08:49.823Z",
-      "updatedAt": "2026-09-05T08:08:49.823Z"
+      "updatedAt": "2026-09-05T08:08:49.823Z",
+      "categorySlug": "kitchen-dining"
     },
     {
       "id": "prod-dd-10830864122166",
@@ -3417,7 +3495,8 @@
       "inventoryCount": 50,
       "syncTimestamp": "2026-09-05T08:08:49.830Z",
       "createdAt": "2026-09-05T08:08:49.830Z",
-      "updatedAt": "2026-09-05T08:08:49.830Z"
+      "updatedAt": "2026-09-05T08:08:49.830Z",
+      "categorySlug": "kitchen-dining"
     },
     {
       "id": "prod-dd-10830864384310",
@@ -3457,7 +3536,8 @@
       "inventoryCount": 50,
       "syncTimestamp": "2026-09-05T08:08:49.837Z",
       "createdAt": "2026-09-05T08:08:49.837Z",
-      "updatedAt": "2026-09-05T08:08:49.837Z"
+      "updatedAt": "2026-09-05T08:08:49.837Z",
+      "categorySlug": "kitchen-dining"
     },
     {
       "id": "prod-dd-10830864482614",
@@ -3498,7 +3578,8 @@
       "inventoryCount": 50,
       "syncTimestamp": "2026-09-05T08:08:49.844Z",
       "createdAt": "2026-09-05T08:08:49.844Z",
-      "updatedAt": "2026-09-05T08:08:49.844Z"
+      "updatedAt": "2026-09-05T08:08:49.844Z",
+      "categorySlug": "kitchen-dining"
     },
     {
       "id": "prod-dd-10822520865078",
@@ -3538,7 +3619,8 @@
       "inventoryCount": 50,
       "syncTimestamp": "2026-09-05T08:08:49.861Z",
       "createdAt": "2026-09-05T08:08:49.861Z",
-      "updatedAt": "2026-09-05T08:08:49.861Z"
+      "updatedAt": "2026-09-05T08:08:49.861Z",
+      "categorySlug": "kitchen-dining"
     },
     {
       "id": "prod-dd-10821738463542",
@@ -3579,7 +3661,8 @@
       "inventoryCount": 50,
       "syncTimestamp": "2026-09-05T08:08:49.870Z",
       "createdAt": "2026-09-05T08:08:49.870Z",
-      "updatedAt": "2026-09-05T08:08:49.870Z"
+      "updatedAt": "2026-09-05T08:08:49.870Z",
+      "categorySlug": "smart-gadgets"
     },
     {
       "id": "prod-dd-10821680791862",
@@ -3620,7 +3703,8 @@
       "inventoryCount": 50,
       "syncTimestamp": "2026-09-05T08:08:49.880Z",
       "createdAt": "2026-09-05T08:08:49.880Z",
-      "updatedAt": "2026-09-05T08:08:49.880Z"
+      "updatedAt": "2026-09-05T08:08:49.880Z",
+      "categorySlug": "smart-gadgets"
     },
     {
       "id": "prod-dd-10799701033270",
@@ -3661,7 +3745,8 @@
       "inventoryCount": 50,
       "syncTimestamp": "2026-09-05T08:08:49.891Z",
       "createdAt": "2026-09-05T08:08:49.891Z",
-      "updatedAt": "2026-09-05T08:08:49.891Z"
+      "updatedAt": "2026-09-05T08:08:49.891Z",
+      "categorySlug": "kitchen-dining"
     },
     {
       "id": "prod-dd-10821805211958",
@@ -3702,7 +3787,8 @@
       "inventoryCount": 50,
       "syncTimestamp": "2026-09-05T08:08:49.898Z",
       "createdAt": "2026-09-05T08:08:49.898Z",
-      "updatedAt": "2026-09-05T08:08:49.898Z"
+      "updatedAt": "2026-09-05T08:08:49.898Z",
+      "categorySlug": "kitchen-dining"
     },
     {
       "id": "prod-dd-10821086642486",
@@ -3743,7 +3829,8 @@
       "inventoryCount": 50,
       "syncTimestamp": "2026-09-05T08:08:49.905Z",
       "createdAt": "2026-09-05T08:08:49.905Z",
-      "updatedAt": "2026-09-05T08:08:49.905Z"
+      "updatedAt": "2026-09-05T08:08:49.905Z",
+      "categorySlug": "kitchen-dining"
     },
     {
       "id": "prod-dd-10821003608374",
@@ -3783,7 +3870,8 @@
       "inventoryCount": 50,
       "syncTimestamp": "2026-09-05T08:08:49.914Z",
       "createdAt": "2026-09-05T08:08:49.914Z",
-      "updatedAt": "2026-09-05T08:08:49.914Z"
+      "updatedAt": "2026-09-05T08:08:49.914Z",
+      "categorySlug": "beauty-grooming"
     },
     {
       "id": "prod-dd-10826650353974",
@@ -3826,7 +3914,8 @@
       "inventoryCount": 50,
       "syncTimestamp": "2026-09-05T08:08:49.922Z",
       "createdAt": "2026-09-05T08:08:49.922Z",
-      "updatedAt": "2026-09-05T08:08:49.922Z"
+      "updatedAt": "2026-09-05T08:08:49.922Z",
+      "categorySlug": "beauty-grooming"
     },
     {
       "id": "prod-dd-10821451940150",
@@ -3867,7 +3956,8 @@
       "inventoryCount": 50,
       "syncTimestamp": "2026-09-05T08:08:49.931Z",
       "createdAt": "2026-09-05T08:08:49.931Z",
-      "updatedAt": "2026-09-05T08:08:49.931Z"
+      "updatedAt": "2026-09-05T08:08:49.931Z",
+      "categorySlug": "kitchen-dining"
     },
     {
       "id": "prod-dd-10821065933110",
@@ -3908,7 +3998,8 @@
       "inventoryCount": 50,
       "syncTimestamp": "2026-09-05T08:08:49.939Z",
       "createdAt": "2026-09-05T08:08:49.939Z",
-      "updatedAt": "2026-09-05T08:08:49.939Z"
+      "updatedAt": "2026-09-05T08:08:49.939Z",
+      "categorySlug": "kitchen-dining"
     },
     {
       "id": "prod-dd-10821715591478",
@@ -3949,7 +4040,8 @@
       "inventoryCount": 50,
       "syncTimestamp": "2026-09-05T08:08:49.947Z",
       "createdAt": "2026-09-05T08:08:49.947Z",
-      "updatedAt": "2026-09-05T08:08:49.947Z"
+      "updatedAt": "2026-09-05T08:08:49.947Z",
+      "categorySlug": "kitchen-dining"
     },
     {
       "id": "prod-dd-10811440431414",
@@ -3990,7 +4082,8 @@
       "inventoryCount": 50,
       "syncTimestamp": "2026-09-05T08:08:49.954Z",
       "createdAt": "2026-09-05T08:08:49.954Z",
-      "updatedAt": "2026-09-05T08:08:49.954Z"
+      "updatedAt": "2026-09-05T08:08:49.954Z",
+      "categorySlug": "kitchen-dining"
     },
     {
       "id": "prod-dd-10799706865974",
@@ -4031,7 +4124,8 @@
       "inventoryCount": 50,
       "syncTimestamp": "2026-09-05T08:08:49.964Z",
       "createdAt": "2026-09-05T08:08:49.964Z",
-      "updatedAt": "2026-09-05T08:08:49.964Z"
+      "updatedAt": "2026-09-05T08:08:49.964Z",
+      "categorySlug": "smart-gadgets"
     },
     {
       "id": "prod-dd-10821693899062",
@@ -4074,7 +4168,8 @@
       "inventoryCount": 50,
       "syncTimestamp": "2026-09-05T08:08:49.971Z",
       "createdAt": "2026-09-05T08:08:49.971Z",
-      "updatedAt": "2026-09-05T08:08:49.971Z"
+      "updatedAt": "2026-09-05T08:08:49.971Z",
+      "categorySlug": "kitchen-dining"
     },
     {
       "id": "prod-dd-10821071307062",
@@ -4116,7 +4211,8 @@
       "inventoryCount": 50,
       "syncTimestamp": "2026-09-05T08:08:49.979Z",
       "createdAt": "2026-09-05T08:08:49.979Z",
-      "updatedAt": "2026-09-05T08:08:49.979Z"
+      "updatedAt": "2026-09-05T08:08:49.979Z",
+      "categorySlug": "kitchen-dining"
     },
     {
       "id": "prod-dd-10821061443894",
@@ -4157,7 +4253,8 @@
       "inventoryCount": 50,
       "syncTimestamp": "2026-09-05T08:08:49.987Z",
       "createdAt": "2026-09-05T08:08:49.987Z",
-      "updatedAt": "2026-09-05T08:08:49.987Z"
+      "updatedAt": "2026-09-05T08:08:49.987Z",
+      "categorySlug": "home-living"
     },
     {
       "id": "prod-dd-10799704244534",
@@ -4198,7 +4295,8 @@
       "inventoryCount": 50,
       "syncTimestamp": "2026-09-05T08:08:49.997Z",
       "createdAt": "2026-09-05T08:08:49.997Z",
-      "updatedAt": "2026-09-05T08:08:49.997Z"
+      "updatedAt": "2026-09-05T08:08:49.997Z",
+      "categorySlug": "kitchen-dining"
     },
     {
       "id": "prod-dd-10821005148470",
@@ -4239,7 +4337,8 @@
       "inventoryCount": 50,
       "syncTimestamp": "2026-09-05T08:08:50.006Z",
       "createdAt": "2026-09-05T08:08:50.006Z",
-      "updatedAt": "2026-09-05T08:08:50.006Z"
+      "updatedAt": "2026-09-05T08:08:50.006Z",
+      "categorySlug": "kitchen-dining"
     },
     {
       "id": "prod-dd-10799697854774",
@@ -4281,7 +4380,8 @@
       "inventoryCount": 50,
       "syncTimestamp": "2026-09-05T08:08:50.015Z",
       "createdAt": "2026-09-05T08:08:50.015Z",
-      "updatedAt": "2026-09-05T08:08:50.015Z"
+      "updatedAt": "2026-09-05T08:08:50.015Z",
+      "categorySlug": "kitchen-dining"
     },
     {
       "id": "prod-dd-10799693562166",
@@ -4323,7 +4423,8 @@
       "inventoryCount": 50,
       "syncTimestamp": "2026-09-05T08:08:50.025Z",
       "createdAt": "2026-09-05T08:08:50.025Z",
-      "updatedAt": "2026-09-05T08:08:50.025Z"
+      "updatedAt": "2026-09-05T08:08:50.025Z",
+      "categorySlug": "home-living"
     },
     {
       "id": "prod-dd-10799682683190",
@@ -4366,7 +4467,8 @@
       "inventoryCount": 50,
       "syncTimestamp": "2026-09-05T08:08:50.035Z",
       "createdAt": "2026-09-05T08:08:50.035Z",
-      "updatedAt": "2026-09-05T08:08:50.035Z"
+      "updatedAt": "2026-09-05T08:08:50.035Z",
+      "categorySlug": "smart-gadgets"
     },
     {
       "id": "prod-dd-10799706046774",
@@ -4407,7 +4509,8 @@
       "inventoryCount": 50,
       "syncTimestamp": "2026-09-05T08:08:50.045Z",
       "createdAt": "2026-09-05T08:08:50.045Z",
-      "updatedAt": "2026-09-05T08:08:50.045Z"
+      "updatedAt": "2026-09-05T08:08:50.045Z",
+      "categorySlug": "kitchen-dining"
     },
     {
       "id": "prod-dd-10799713124662",
@@ -4448,7 +4551,8 @@
       "inventoryCount": 50,
       "syncTimestamp": "2026-09-05T08:08:50.054Z",
       "createdAt": "2026-09-05T08:08:50.054Z",
-      "updatedAt": "2026-09-05T08:08:50.054Z"
+      "updatedAt": "2026-09-05T08:08:50.054Z",
+      "categorySlug": "home-living"
     },
     {
       "id": "prod-dd-10799712534838",
@@ -4489,7 +4593,8 @@
       "inventoryCount": 50,
       "syncTimestamp": "2026-09-05T08:08:50.063Z",
       "createdAt": "2026-09-05T08:08:50.063Z",
-      "updatedAt": "2026-09-05T08:08:50.063Z"
+      "updatedAt": "2026-09-05T08:08:50.063Z",
+      "categorySlug": "home-living"
     },
     {
       "id": "prod-dd-10799709028662",
@@ -4530,7 +4635,8 @@
       "inventoryCount": 50,
       "syncTimestamp": "2026-09-05T08:08:50.077Z",
       "createdAt": "2026-09-05T08:08:50.077Z",
-      "updatedAt": "2026-09-05T08:08:50.077Z"
+      "updatedAt": "2026-09-05T08:08:50.077Z",
+      "categorySlug": "kitchen-dining"
     },
     {
       "id": "prod-dd-10799717712182",
@@ -4571,7 +4677,8 @@
       "inventoryCount": 50,
       "syncTimestamp": "2026-09-05T08:08:50.087Z",
       "createdAt": "2026-09-05T08:08:50.087Z",
-      "updatedAt": "2026-09-05T08:08:50.087Z"
+      "updatedAt": "2026-09-05T08:08:50.087Z",
+      "categorySlug": "smart-gadgets"
     },
     {
       "id": "prod-dd-10799713550646",
@@ -4611,7 +4718,8 @@
       "inventoryCount": 50,
       "syncTimestamp": "2026-09-05T08:08:50.096Z",
       "createdAt": "2026-09-05T08:08:50.096Z",
-      "updatedAt": "2026-09-05T08:08:50.096Z"
+      "updatedAt": "2026-09-05T08:08:50.096Z",
+      "categorySlug": "kitchen-dining"
     },
     {
       "id": "prod-dd-10821055971638",
@@ -4652,7 +4760,8 @@
       "inventoryCount": 50,
       "syncTimestamp": "2026-09-05T08:08:50.107Z",
       "createdAt": "2026-09-05T08:08:50.107Z",
-      "updatedAt": "2026-09-05T08:08:50.107Z"
+      "updatedAt": "2026-09-05T08:08:50.107Z",
+      "categorySlug": "kitchen-dining"
     },
     {
       "id": "prod-dd-10821006688566",
@@ -4693,7 +4802,8 @@
       "inventoryCount": 50,
       "syncTimestamp": "2026-09-05T08:08:50.116Z",
       "createdAt": "2026-09-05T08:08:50.116Z",
-      "updatedAt": "2026-09-05T08:08:50.116Z"
+      "updatedAt": "2026-09-05T08:08:50.116Z",
+      "categorySlug": "kitchen-dining"
     },
     {
       "id": "prod-dd-10821681905974",
@@ -4734,7 +4844,8 @@
       "inventoryCount": 50,
       "syncTimestamp": "2026-09-05T08:08:50.126Z",
       "createdAt": "2026-09-05T08:08:50.126Z",
-      "updatedAt": "2026-09-05T08:08:50.126Z"
+      "updatedAt": "2026-09-05T08:08:50.126Z",
+      "categorySlug": "kitchen-dining"
     },
     {
       "id": "prod-dd-10821331681590",
@@ -4775,7 +4886,8 @@
       "inventoryCount": 50,
       "syncTimestamp": "2026-09-05T08:08:50.135Z",
       "createdAt": "2026-09-05T08:08:50.135Z",
-      "updatedAt": "2026-09-05T08:08:50.135Z"
+      "updatedAt": "2026-09-05T08:08:50.135Z",
+      "categorySlug": "home-living"
     },
     {
       "id": "prod-dd-10821687443766",
@@ -4817,7 +4929,8 @@
       "inventoryCount": 50,
       "syncTimestamp": "2026-09-05T08:08:50.145Z",
       "createdAt": "2026-09-05T08:08:50.145Z",
-      "updatedAt": "2026-09-05T08:08:50.145Z"
+      "updatedAt": "2026-09-05T08:08:50.145Z",
+      "categorySlug": "kitchen-dining"
     },
     {
       "id": "prod-dd-10821686493494",
@@ -4858,7 +4971,8 @@
       "inventoryCount": 50,
       "syncTimestamp": "2026-09-05T08:08:50.155Z",
       "createdAt": "2026-09-05T08:08:50.155Z",
-      "updatedAt": "2026-09-05T08:08:50.155Z"
+      "updatedAt": "2026-09-05T08:08:50.155Z",
+      "categorySlug": "kitchen-dining"
     },
     {
       "id": "prod-dd-10821684134198",
@@ -4899,7 +5013,8 @@
       "inventoryCount": 50,
       "syncTimestamp": "2026-09-05T08:08:50.165Z",
       "createdAt": "2026-09-05T08:08:50.165Z",
-      "updatedAt": "2026-09-05T08:08:50.165Z"
+      "updatedAt": "2026-09-05T08:08:50.165Z",
+      "categorySlug": "kitchen-dining"
     },
     {
       "id": "prod-dd-10826652516662",
@@ -4943,7 +5058,8 @@
       "inventoryCount": 50,
       "syncTimestamp": "2026-09-05T08:08:50.175Z",
       "createdAt": "2026-09-05T08:08:50.175Z",
-      "updatedAt": "2026-09-05T08:08:50.175Z"
+      "updatedAt": "2026-09-05T08:08:50.175Z",
+      "categorySlug": "beauty-grooming"
     },
     {
       "id": "prod-dd-10830865727798",
@@ -4984,7 +5100,8 @@
       "inventoryCount": 50,
       "syncTimestamp": "2026-09-05T08:08:50.185Z",
       "createdAt": "2026-09-05T08:08:50.185Z",
-      "updatedAt": "2026-09-05T08:08:50.185Z"
+      "updatedAt": "2026-09-05T08:08:50.185Z",
+      "categorySlug": "kitchen-dining"
     },
     {
       "id": "prod-dd-10830863925558",
@@ -5025,7 +5142,8 @@
       "inventoryCount": 50,
       "syncTimestamp": "2026-09-05T08:08:50.193Z",
       "createdAt": "2026-09-05T08:08:50.194Z",
-      "updatedAt": "2026-09-05T08:08:50.194Z"
+      "updatedAt": "2026-09-05T08:08:50.194Z",
+      "categorySlug": "smart-gadgets"
     },
     {
       "id": "prod-dd-10830864711990",
@@ -5065,7 +5183,8 @@
       "inventoryCount": 50,
       "syncTimestamp": "2026-09-05T08:08:50.205Z",
       "createdAt": "2026-09-05T08:08:50.205Z",
-      "updatedAt": "2026-09-05T08:08:50.205Z"
+      "updatedAt": "2026-09-05T08:08:50.205Z",
+      "categorySlug": "kitchen-dining"
     },
     {
       "id": "prod-dd-10821767463222",
@@ -5107,7 +5226,8 @@
       "inventoryCount": 50,
       "syncTimestamp": "2026-09-05T08:08:50.214Z",
       "createdAt": "2026-09-05T08:08:50.214Z",
-      "updatedAt": "2026-09-05T08:08:50.214Z"
+      "updatedAt": "2026-09-05T08:08:50.214Z",
+      "categorySlug": "kitchen-dining"
     },
     {
       "id": "prod-dd-10821744853302",
@@ -5148,7 +5268,8 @@
       "inventoryCount": 50,
       "syncTimestamp": "2026-09-05T08:08:50.225Z",
       "createdAt": "2026-09-05T08:08:50.225Z",
-      "updatedAt": "2026-09-05T08:08:50.225Z"
+      "updatedAt": "2026-09-05T08:08:50.225Z",
+      "categorySlug": "kitchen-dining"
     },
     {
       "id": "prod-dd-10821078286646",
@@ -5189,7 +5310,8 @@
       "inventoryCount": 50,
       "syncTimestamp": "2026-09-05T08:08:50.235Z",
       "createdAt": "2026-09-05T08:08:50.235Z",
-      "updatedAt": "2026-09-05T08:08:50.235Z"
+      "updatedAt": "2026-09-05T08:08:50.235Z",
+      "categorySlug": "kitchen-dining"
     },
     {
       "id": "prod-dd-10821081694518",
@@ -5230,7 +5352,8 @@
       "inventoryCount": 50,
       "syncTimestamp": "2026-09-05T08:08:50.246Z",
       "createdAt": "2026-09-05T08:08:50.246Z",
-      "updatedAt": "2026-09-05T08:08:50.246Z"
+      "updatedAt": "2026-09-05T08:08:50.246Z",
+      "categorySlug": "kitchen-dining"
     },
     {
       "id": "prod-dd-10820994793782",
@@ -5270,7 +5393,8 @@
       "inventoryCount": 50,
       "syncTimestamp": "2026-09-05T08:08:50.255Z",
       "createdAt": "2026-09-05T08:08:50.255Z",
-      "updatedAt": "2026-09-05T08:08:50.255Z"
+      "updatedAt": "2026-09-05T08:08:50.255Z",
+      "categorySlug": "kitchen-dining"
     },
     {
       "id": "prod-dd-10799694348598",
@@ -5312,7 +5436,8 @@
       "inventoryCount": 50,
       "syncTimestamp": "2026-09-05T08:08:50.266Z",
       "createdAt": "2026-09-05T08:08:50.266Z",
-      "updatedAt": "2026-09-05T08:08:50.266Z"
+      "updatedAt": "2026-09-05T08:08:50.266Z",
+      "categorySlug": "kitchen-dining"
     },
     {
       "id": "prod-dd-10799707291958",
@@ -5354,7 +5479,8 @@
       "inventoryCount": 50,
       "syncTimestamp": "2026-09-05T08:08:50.277Z",
       "createdAt": "2026-09-05T08:08:50.277Z",
-      "updatedAt": "2026-09-05T08:08:50.277Z"
+      "updatedAt": "2026-09-05T08:08:50.277Z",
+      "categorySlug": "kitchen-dining"
     },
     {
       "id": "prod-dd-10799705489718",
@@ -5395,7 +5521,8 @@
       "inventoryCount": 50,
       "syncTimestamp": "2026-09-05T08:08:50.288Z",
       "createdAt": "2026-09-05T08:08:50.288Z",
-      "updatedAt": "2026-09-05T08:08:50.288Z"
+      "updatedAt": "2026-09-05T08:08:50.288Z",
+      "categorySlug": "kitchen-dining"
     },
     {
       "id": "prod-dd-10799705194806",
@@ -5436,7 +5563,8 @@
       "inventoryCount": 50,
       "syncTimestamp": "2026-09-05T08:08:50.298Z",
       "createdAt": "2026-09-05T08:08:50.298Z",
-      "updatedAt": "2026-09-05T08:08:50.298Z"
+      "updatedAt": "2026-09-05T08:08:50.298Z",
+      "categorySlug": "kitchen-dining"
     },
     {
       "id": "prod-dd-10799711682870",
@@ -5477,7 +5605,8 @@
       "inventoryCount": 50,
       "syncTimestamp": "2026-09-05T08:08:50.309Z",
       "createdAt": "2026-09-05T08:08:50.309Z",
-      "updatedAt": "2026-09-05T08:08:50.309Z"
+      "updatedAt": "2026-09-05T08:08:50.309Z",
+      "categorySlug": "kitchen-dining"
     },
     {
       "id": "prod-dd-10820106617142",
@@ -5518,7 +5647,8 @@
       "inventoryCount": 50,
       "syncTimestamp": "2026-09-05T08:08:50.318Z",
       "createdAt": "2026-09-05T08:08:50.318Z",
-      "updatedAt": "2026-09-05T08:08:50.318Z"
+      "updatedAt": "2026-09-05T08:08:50.318Z",
+      "categorySlug": "kitchen-dining"
     },
     {
       "id": "prod-dd-10799714238774",
@@ -5559,7 +5689,8 @@
       "inventoryCount": 50,
       "syncTimestamp": "2026-09-05T08:08:50.330Z",
       "createdAt": "2026-09-05T08:08:50.330Z",
-      "updatedAt": "2026-09-05T08:08:50.330Z"
+      "updatedAt": "2026-09-05T08:08:50.330Z",
+      "categorySlug": "kitchen-dining"
     },
     {
       "id": "prod-dd-10821023203638",
@@ -5600,7 +5731,8 @@
       "inventoryCount": 50,
       "syncTimestamp": "2026-09-05T08:08:50.340Z",
       "createdAt": "2026-09-05T08:08:50.340Z",
-      "updatedAt": "2026-09-05T08:08:50.340Z"
+      "updatedAt": "2026-09-05T08:08:50.340Z",
+      "categorySlug": "kitchen-dining"
     },
     {
       "id": "prod-dd-10821011931446",
@@ -5641,7 +5773,8 @@
       "inventoryCount": 50,
       "syncTimestamp": "2026-09-05T08:08:50.350Z",
       "createdAt": "2026-09-05T08:08:50.350Z",
-      "updatedAt": "2026-09-05T08:08:50.350Z"
+      "updatedAt": "2026-09-05T08:08:50.350Z",
+      "categorySlug": "kitchen-dining"
     },
     {
       "id": "prod-dd-10821678661942",
@@ -5682,7 +5815,8 @@
       "inventoryCount": 50,
       "syncTimestamp": "2026-09-05T08:08:50.361Z",
       "createdAt": "2026-09-05T08:08:50.361Z",
-      "updatedAt": "2026-09-05T08:08:50.361Z"
+      "updatedAt": "2026-09-05T08:08:50.361Z",
+      "categorySlug": "smart-gadgets"
     },
     {
       "id": "prod-dd-10821387780406",
@@ -5723,7 +5857,8 @@
       "inventoryCount": 50,
       "syncTimestamp": "2026-09-05T08:08:50.372Z",
       "createdAt": "2026-09-05T08:08:50.372Z",
-      "updatedAt": "2026-09-05T08:08:50.372Z"
+      "updatedAt": "2026-09-05T08:08:50.372Z",
+      "categorySlug": "kitchen-dining"
     },
     {
       "id": "prod-dd-10821693047094",
@@ -5764,7 +5899,8 @@
       "inventoryCount": 50,
       "syncTimestamp": "2026-09-05T08:08:50.382Z",
       "createdAt": "2026-09-05T08:08:50.382Z",
-      "updatedAt": "2026-09-05T08:08:50.382Z"
+      "updatedAt": "2026-09-05T08:08:50.382Z",
+      "categorySlug": "kitchen-dining"
     },
     {
       "id": "prod-dd-10750087037238",
@@ -5805,7 +5941,8 @@
       "inventoryCount": 50,
       "syncTimestamp": "2026-09-05T08:08:50.394Z",
       "createdAt": "2026-09-05T08:08:50.394Z",
-      "updatedAt": "2026-09-05T08:08:50.394Z"
+      "updatedAt": "2026-09-05T08:08:50.394Z",
+      "categorySlug": "kitchen-dining"
     }
   ],
   "settings": {
@@ -5819,8 +5956,8 @@
     "minimumOrderAmount": "149",
     "standardShippingFee": "40",
     "freeShippingThreshold": "499",
-    "catalog_sync_state": "{\"supplier\":\"DeoDap\",\"status\":\"COMPLETED\",\"lastSyncAt\":\"2026-09-05T08:08:50.405Z\",\"productsFound\":100,\"eligibleCount\":75,\"publishedCount\":75,\"minQualityScore\":65,\"maxPublishLimit\":250,\"autoSyncIntervalHours\":6}",
-    "catalog_sync_logs": "[{\"id\":\"log-1788595730406\",\"timestamp\":\"2026-09-05T08:08:50.406Z\",\"supplier\":\"DeoDap\",\"productsFetched\":100,\"eligible\":75,\"published\":75,\"durationMs\":1171,\"status\":\"SUCCESS\",\"summary\":\"Synchronized 100 items from DeoDap feed (75 new, 0 updated, 75 eligible).\",\"sampleItems\":[{\"title\":\"Sameo Super Genius Handheld Gaming Console with 500 Retro Games\",\"supplierPrice\":1499,\"sellingPrice\":1879,\"margin\":380,\"score\":70,\"status\":\"FILTERED\",\"reason\":\"Out of stock / variant unavailable\"},{\"title\":\"Sameo Micro Genius 2.0 HDMI Console - 800 Games Wireless Fun\",\"supplierPrice\":2899,\"sellingPrice\":3629,\"margin\":730,\"score\":70,\"status\":\"FILTERED\",\"reason\":\"Out of stock / variant unavailable\"},{\"title\":\"Kidsgear Controller Handheld Console - 520 Retro Games\",\"supplierPrice\":1499,\"sellingPrice\":1879,\"margin\":380,\"score\":70,\"status\":\"FILTERED\",\"reason\":\"Out of stock / variant unavailable\"},{\"title\":\"Digital Kitchen Timer Machine with Large LCD Display Alarm for Cooking and Baking\",\"supplierPrice\":48,\"sellingPrice\":199,\"margin\":151,\"score\":70,\"status\":\"FILTERED\",\"reason\":\"Out of stock / variant unavailable\"},{\"title\":\"Plastic Toilet Seat Lifter Handle Hygienic Lid Cover Opener (1 Pc)\",\"supplierPrice\":29,\"sellingPrice\":179,\"margin\":150,\"score\":70,\"status\":\"FILTERED\",\"reason\":\"Out of stock / variant unavailable\"},{\"title\":\"Mini USB LED Night Light Bulb with Warm Glow for Bedroom and Travel Use (1 Pc)\",\"supplierPrice\":6.5,\"sellingPrice\":159,\"margin\":152.5,\"score\":70,\"status\":\"FILTERED\",\"reason\":\"Out of stock / variant unavailable, Invalid supplier price (₹6.5)\"},{\"title\":\"Octopus Folding Clothes Drying Hanger with Rotating Multi Arms for Home (1 Pc)\",\"supplierPrice\":2999,\"sellingPrice\":3749,\"margin\":750,\"score\":70,\"status\":\"FILTERED\",\"reason\":\"Out of stock / variant unavailable\"},{\"title\":\"Mix Cartoon Self Adhesive Wall Hook for Keys, Towels Home Organization (1 Pc)\",\"supplierPrice\":2,\"sellingPrice\":159,\"margin\":157,\"score\":70,\"status\":\"FILTERED\",\"reason\":\"Out of stock / variant unavailable, Invalid supplier price (₹2)\"},{\"title\":\"Wall Mounted Plastic Kitchen Drain Rack with Multipurpose Storage Shelf (1 Pc)\",\"supplierPrice\":125,\"sellingPrice\":279,\"margin\":154,\"score\":75,\"status\":\"FILTERED\",\"reason\":\"Out of stock / variant unavailable\"},{\"title\":\"Protective Mesh Underwear Laundry Wash Bag with Zipper for Machine Wash (1 Pc)\",\"supplierPrice\":159,\"sellingPrice\":309,\"margin\":150,\"score\":75,\"status\":\"FILTERED\",\"reason\":\"Out of stock / variant unavailable\"},{\"title\":\"USB Rechargeable 2-in-1 LED Flashlight with Soft Lamp for Emergency Use (1 Pc)\",\"supplierPrice\":119,\"sellingPrice\":269,\"margin\":150,\"score\":75,\"status\":\"FILTERED\",\"reason\":\"Out of stock / variant unavailable\"},{\"title\":\"3-in-1 Mesh Tea Filter Strainer Set with Long Handles for Kitchen Use (3 Pc Set)\",\"supplierPrice\":120,\"sellingPrice\":269,\"margin\":149,\"score\":75,\"status\":\"FILTERED\",\"reason\":\"Out of stock / variant unavailable\"},{\"title\":\"Self Adhesive Wall Mounted Shampoo Bottle Holder Set for Bathroom Storage (2 Pc)\",\"supplierPrice\":29,\"sellingPrice\":179,\"margin\":150,\"score\":70,\"status\":\"FILTERED\",\"reason\":\"Out of stock / variant unavailable\"},{\"title\":\"Heavy Duty SS Wire Clothesline Rope with Locking Hooks for Home Laundry (10 M)\",\"supplierPrice\":99,\"sellingPrice\":249,\"margin\":150,\"score\":75,\"status\":\"FILTERED\",\"reason\":\"Out of stock / variant unavailable\"},{\"title\":\"Round Plastic Planter Pot Set for Indoor Outdoor Plants and Home Garden (3 Pc)\",\"supplierPrice\":79,\"sellingPrice\":229,\"margin\":150,\"score\":75,\"status\":\"FILTERED\",\"reason\":\"Out of stock / variant unavailable\"}]}]"
+    "catalog_sync_state": "{\"supplier\":\"DeoDap\",\"status\":\"FAILED\",\"lastSyncAt\":\"2026-09-05T08:08:50.405Z\",\"productsFound\":100,\"eligibleCount\":75,\"publishedCount\":75,\"minQualityScore\":65,\"maxPublishLimit\":250,\"autoSyncIntervalHours\":6,\"lastErrorMessage\":\"DeoDap API responded with HTTP 429: Too Many Requests\"}",
+    "catalog_sync_logs": "[{\"id\":\"log-1788598738312\",\"timestamp\":\"2026-09-05T08:58:58.312Z\",\"supplier\":\"DeoDap\",\"productsFetched\":0,\"eligible\":0,\"published\":0,\"durationMs\":157,\"status\":\"ERROR\",\"summary\":\"Sync failed: DeoDap API responded with HTTP 429: Too Many Requests\"},{\"id\":\"log-1788595730406\",\"timestamp\":\"2026-09-05T08:08:50.406Z\",\"supplier\":\"DeoDap\",\"productsFetched\":100,\"eligible\":75,\"published\":75,\"durationMs\":1171,\"status\":\"SUCCESS\",\"summary\":\"Synchronized 100 items from DeoDap feed (75 new, 0 updated, 75 eligible).\",\"sampleItems\":[{\"title\":\"Sameo Super Genius Handheld Gaming Console with 500 Retro Games\",\"supplierPrice\":1499,\"sellingPrice\":1879,\"margin\":380,\"score\":70,\"status\":\"FILTERED\",\"reason\":\"Out of stock / variant unavailable\"},{\"title\":\"Sameo Micro Genius 2.0 HDMI Console - 800 Games Wireless Fun\",\"supplierPrice\":2899,\"sellingPrice\":3629,\"margin\":730,\"score\":70,\"status\":\"FILTERED\",\"reason\":\"Out of stock / variant unavailable\"},{\"title\":\"Kidsgear Controller Handheld Console - 520 Retro Games\",\"supplierPrice\":1499,\"sellingPrice\":1879,\"margin\":380,\"score\":70,\"status\":\"FILTERED\",\"reason\":\"Out of stock / variant unavailable\"},{\"title\":\"Digital Kitchen Timer Machine with Large LCD Display Alarm for Cooking and Baking\",\"supplierPrice\":48,\"sellingPrice\":199,\"margin\":151,\"score\":70,\"status\":\"FILTERED\",\"reason\":\"Out of stock / variant unavailable\"},{\"title\":\"Plastic Toilet Seat Lifter Handle Hygienic Lid Cover Opener (1 Pc)\",\"supplierPrice\":29,\"sellingPrice\":179,\"margin\":150,\"score\":70,\"status\":\"FILTERED\",\"reason\":\"Out of stock / variant unavailable\"},{\"title\":\"Mini USB LED Night Light Bulb with Warm Glow for Bedroom and Travel Use (1 Pc)\",\"supplierPrice\":6.5,\"sellingPrice\":159,\"margin\":152.5,\"score\":70,\"status\":\"FILTERED\",\"reason\":\"Out of stock / variant unavailable, Invalid supplier price (₹6.5)\"},{\"title\":\"Octopus Folding Clothes Drying Hanger with Rotating Multi Arms for Home (1 Pc)\",\"supplierPrice\":2999,\"sellingPrice\":3749,\"margin\":750,\"score\":70,\"status\":\"FILTERED\",\"reason\":\"Out of stock / variant unavailable\"},{\"title\":\"Mix Cartoon Self Adhesive Wall Hook for Keys, Towels Home Organization (1 Pc)\",\"supplierPrice\":2,\"sellingPrice\":159,\"margin\":157,\"score\":70,\"status\":\"FILTERED\",\"reason\":\"Out of stock / variant unavailable, Invalid supplier price (₹2)\"},{\"title\":\"Wall Mounted Plastic Kitchen Drain Rack with Multipurpose Storage Shelf (1 Pc)\",\"supplierPrice\":125,\"sellingPrice\":279,\"margin\":154,\"score\":75,\"status\":\"FILTERED\",\"reason\":\"Out of stock / variant unavailable\"},{\"title\":\"Protective Mesh Underwear Laundry Wash Bag with Zipper for Machine Wash (1 Pc)\",\"supplierPrice\":159,\"sellingPrice\":309,\"margin\":150,\"score\":75,\"status\":\"FILTERED\",\"reason\":\"Out of stock / variant unavailable\"},{\"title\":\"USB Rechargeable 2-in-1 LED Flashlight with Soft Lamp for Emergency Use (1 Pc)\",\"supplierPrice\":119,\"sellingPrice\":269,\"margin\":150,\"score\":75,\"status\":\"FILTERED\",\"reason\":\"Out of stock / variant unavailable\"},{\"title\":\"3-in-1 Mesh Tea Filter Strainer Set with Long Handles for Kitchen Use (3 Pc Set)\",\"supplierPrice\":120,\"sellingPrice\":269,\"margin\":149,\"score\":75,\"status\":\"FILTERED\",\"reason\":\"Out of stock / variant unavailable\"},{\"title\":\"Self Adhesive Wall Mounted Shampoo Bottle Holder Set for Bathroom Storage (2 Pc)\",\"supplierPrice\":29,\"sellingPrice\":179,\"margin\":150,\"score\":70,\"status\":\"FILTERED\",\"reason\":\"Out of stock / variant unavailable\"},{\"title\":\"Heavy Duty SS Wire Clothesline Rope with Locking Hooks for Home Laundry (10 M)\",\"supplierPrice\":99,\"sellingPrice\":249,\"margin\":150,\"score\":75,\"status\":\"FILTERED\",\"reason\":\"Out of stock / variant unavailable\"},{\"title\":\"Round Plastic Planter Pot Set for Indoor Outdoor Plants and Home Garden (3 Pc)\",\"supplierPrice\":79,\"sellingPrice\":229,\"margin\":150,\"score\":75,\"status\":\"FILTERED\",\"reason\":\"Out of stock / variant unavailable\"}]}]"
   },
   "addresses": [
     {

@@ -1,9 +1,20 @@
 import { Request, Response, NextFunction } from 'express';
+import crypto from 'crypto';
 import jwt from 'jsonwebtoken';
 import { db } from '../db';
 import { Role } from '../types';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'bharatcart_super_secure_jwt_secret_dev_key_2026';
+const JWT_SECRET = process.env.JWT_SECRET;
+
+if (!JWT_SECRET) {
+  if (process.env.NODE_ENV === 'production') {
+    throw new Error('JWT_SECRET environment variable is required in production. Refusing to start.');
+  }
+  console.warn('[Auth] JWT_SECRET not set. Generating an ephemeral dev secret - all sessions will be invalidated on restart. Set JWT_SECRET in .env.');
+}
+
+// Ephemeral dev-only secret (never persisted, regenerated each boot)
+const resolvedSecret: string = JWT_SECRET || crypto.randomBytes(48).toString('hex');
 
 export interface AuthRequest extends Request {
   user?: {
@@ -22,7 +33,7 @@ export function generateToken(user: { id: string; email: string; name: string; r
       name: user.name,
       role: user.role,
     },
-    JWT_SECRET,
+    resolvedSecret,
     { expiresIn: '7d' }
   );
 }
@@ -35,7 +46,7 @@ export function authMiddleware(req: AuthRequest, res: Response, next: NextFuncti
 
   const token = authHeader.split(' ')[1];
   try {
-    const decoded = jwt.verify(token, JWT_SECRET) as any;
+    const decoded = jwt.verify(token, resolvedSecret) as any;
     req.user = decoded;
     next();
   } catch (err) {
@@ -47,16 +58,6 @@ export function authMiddleware(req: AuthRequest, res: Response, next: NextFuncti
 export function requireAuth(req: AuthRequest, res: Response, next: NextFunction) {
   if (!req.user) {
     return res.status(401).json({ error: 'Authentication required. Please log in.' });
-  }
-  next();
-}
-
-export function requireAdmin(req: AuthRequest, res: Response, next: NextFunction) {
-  if (!req.user) {
-    return res.status(401).json({ error: 'Authentication required. Please log in.' });
-  }
-  if (req.user.role !== 'ADMIN') {
-    return res.status(403).json({ error: 'Admin privileges required to access this resource.' });
   }
   next();
 }
