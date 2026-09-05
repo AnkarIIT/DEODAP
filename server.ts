@@ -136,6 +136,10 @@ async function startServer() {
     });
   });
 
+  if (process.env.VERCEL) {
+    return app;
+  }
+
   const server = app.listen(PORT, '0.0.0.0', () => {
     console.log(`[Shoply Backend] Server running on http://0.0.0.0:${PORT}`);
     // Start the catalog sync scheduler explicitly - never on import.
@@ -160,7 +164,8 @@ async function startServer() {
   process.on('SIGINT', () => shutdown('SIGINT'));
 }
 
-startServer().catch((err) => {
-  console.error('Fatal: Failed to start server:', err);
-  process.exit(1);
-});
+export const appPromise = startServer();
+export default async (req: any, res: any) => {
+  const app = await appPromise;
+  return app(req, res);
+};
