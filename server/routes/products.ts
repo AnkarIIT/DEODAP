@@ -87,14 +87,10 @@ router.get('/:slugOrId', async (req, res) => {
 // GET /api/categories
 router.get('/categories/all', async (req, res) => {
   try {
+    // getCategories() already includes _count.products via Prisma,
+    // avoiding an N+1 query (one fetch per category).
     const categories = await db.getCategories();
-    // Add product counts
-    const withCounts: any[] = [];
-    for (const cat of categories) {
-      const catProducts = await db.getProducts({ categoryId: cat.id });
-      withCounts.push({ ...cat, productCount: catProducts.length });
-    }
-    res.json({ categories: withCounts });
+    res.json({ categories });
   } catch (err: any) {
     res.status(500).json({ error: err.message || 'Failed to fetch categories.' });
   }

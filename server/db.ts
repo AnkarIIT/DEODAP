@@ -1167,6 +1167,7 @@ function mapCategory(c: any): Category {
     icon: c.icon ?? undefined,
     sortOrder: c.sortOrder,
     isActive: c.isActive,
+    productCount: c._count?.products,
   };
 }
 
