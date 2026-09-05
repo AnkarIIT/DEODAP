@@ -25,8 +25,8 @@ interface HeaderProps {
   onSelectCategory: (categorySlug: string) => void;
   searchQuery: string;
   onSearchChange: (q: string) => void;
-  activeView: 'store' | 'orders' | 'wishlist' | 'account';
-  setActiveView: (view: 'store' | 'orders' | 'wishlist' | 'account') => void;
+  activeView: 'store' | 'orders' | 'wishlist' | 'account' | 'legal';
+  setActiveView: (view: 'store' | 'orders' | 'wishlist' | 'account' | 'legal') => void;
   onOpenDeals?: () => void;
 }
 

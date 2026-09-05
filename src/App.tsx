@@ -17,6 +17,7 @@ import { CustomerOrdersList } from './components/customer/CustomerOrdersList';
 import { WishlistView } from './components/customer/WishlistView';
 import { AccountView } from './components/customer/AccountView';
 import { ReturnRequestModal } from './components/customer/ReturnRequestModal';
+import { LegalView, LegalSection } from './components/common/LegalView';
 import { api } from './lib/api';
 import { Product, Category, Order } from './types';
 import { SlidersHorizontal, AlertCircle, Tag, ArrowRight } from 'lucide-react';
@@ -26,7 +27,8 @@ function MainContent() {
   const { addToCart } = useCart();
 
   // Navigation and Views
-  const [activeView, setActiveView] = useState<'store' | 'orders' | 'wishlist' | 'account'>('store');
+  const [activeView, setActiveView] = useState<'store' | 'orders' | 'wishlist' | 'account' | 'legal'>('store');
+  const [legalSection, setLegalSection] = useState<LegalSection>('about');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [sortBy, setSortBy] = useState<'featured' | 'price-asc' | 'price-desc' | 'rating'>('featured');
@@ -191,6 +193,14 @@ function MainContent() {
           />
         )}
 
+        {/* VIEW: Legal / Company & Policy Pages */}
+        {activeView === 'legal' && (
+          <LegalView
+            initialSection={legalSection}
+            onNavigate={(view) => setActiveView(view)}
+          />
+        )}
+
         {/* VIEW: Customer Storefront */}
         {activeView === 'store' && (
           <div className="max-w-[1280px] mx-auto px-4 sm:px-8 py-6 sm:py-8">
@@ -350,6 +360,10 @@ function MainContent() {
           setActiveView('store');
         }}
         onNavigate={(view) => setActiveView(view)}
+        onOpenLegal={(section) => {
+          setLegalSection(section);
+          setActiveView('legal');
+        }}
       />
 
       {/* Mobile Bottom Navigation Bar (Visible only on mobile) */}

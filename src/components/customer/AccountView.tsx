@@ -4,7 +4,7 @@ import { useAuth } from '../../context/AuthContext';
 import { BRAND_CONFIG } from '../../config/brand';
 
 interface AccountViewProps {
-  onNavigate: (view: 'store' | 'orders' | 'wishlist' | 'account') => void;
+  onNavigate: (view: 'store' | 'orders' | 'wishlist' | 'account' | 'legal') => void;
 }
 
 export const AccountView: React.FC<AccountViewProps> = ({ onNavigate }) => {

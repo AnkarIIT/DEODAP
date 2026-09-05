@@ -1,13 +1,15 @@
 import React from 'react';
 import { Mail, Phone, MapPin, QrCode, ShieldCheck, Truck, RotateCcw } from 'lucide-react';
 import { BRAND_CONFIG } from '../../config/brand';
+import { LegalSection } from './LegalView';
 
 interface FooterProps {
   onSelectCategory?: (slug: string) => void;
-  onNavigate?: (view: 'store' | 'orders' | 'wishlist' | 'account') => void;
+  onNavigate?: (view: 'store' | 'orders' | 'wishlist' | 'account' | 'legal') => void;
+  onOpenLegal?: (section: LegalSection) => void;
 }
 
-export const Footer: React.FC<FooterProps> = ({ onSelectCategory, onNavigate }) => {
+export const Footer: React.FC<FooterProps> = ({ onSelectCategory, onNavigate, onOpenLegal }) => {
   return (
     <footer className="bg-white border-t border-[#E8E8E5] px-4 sm:px-8 pt-12 pb-24 md:pb-12 text-xs text-[#6B6B6B]">
       <div className="max-w-[1280px] mx-auto space-y-10">
@@ -95,7 +97,7 @@ export const Footer: React.FC<FooterProps> = ({ onSelectCategory, onNavigate }) 
           </div>
 
           {/* Column 3: Help & Support */}
-          <div className="md:col-span-3 space-y-3">
+          <div className="md:col-span-2 space-y-3">
             <h4 className="font-bold text-xs uppercase tracking-wider text-[#111111]">
               Help & Support
             </h4>
@@ -125,8 +127,57 @@ export const Footer: React.FC<FooterProps> = ({ onSelectCategory, onNavigate }) 
             </ul>
           </div>
 
-          {/* Column 4: Connect & Official Verification */}
-          <div className="md:col-span-3 space-y-3">
+          {/* Column 4: Company & Legal */}
+          <div className="md:col-span-2 space-y-3">
+            <h4 className="font-bold text-xs uppercase tracking-wider text-[#111111]">
+              Company
+            </h4>
+            <ul className="space-y-2 text-xs">
+              <li>
+                <button
+                  onClick={() => onOpenLegal && onOpenLegal('about')}
+                  className="hover:text-[#FF5A36] transition-colors cursor-pointer"
+                >
+                  About Us
+                </button>
+              </li>
+              <li>
+                <button
+                  onClick={() => onOpenLegal && onOpenLegal('privacy')}
+                  className="hover:text-[#FF5A36] transition-colors cursor-pointer"
+                >
+                  Privacy Policy
+                </button>
+              </li>
+              <li>
+                <button
+                  onClick={() => onOpenLegal && onOpenLegal('terms')}
+                  className="hover:text-[#FF5A36] transition-colors cursor-pointer"
+                >
+                  Terms & Conditions
+                </button>
+              </li>
+              <li>
+                <button
+                  onClick={() => onOpenLegal && onOpenLegal('refund')}
+                  className="hover:text-[#FF5A36] transition-colors cursor-pointer"
+                >
+                  Refund & Returns
+                </button>
+              </li>
+              <li>
+                <button
+                  onClick={() => onOpenLegal && onOpenLegal('shipping')}
+                  className="hover:text-[#FF5A36] transition-colors cursor-pointer"
+                >
+                  Cancellation & Shipping
+                </button>
+              </li>
+            </ul>
+          </div>
+
+          {/* Column 5: Connect & Official Verification */}
+          <div className="md:col-span-2 space-y-3">
             <h4 className="font-bold text-xs uppercase tracking-wider text-[#111111]">
               Customer Care
             </h4>
